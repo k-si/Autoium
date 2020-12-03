@@ -14,7 +14,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button @click="dialogProject()">取 消</el-button>
           <el-button type="primary" @click="() => append(data)">确 定</el-button>
         </div>
       </el-dialog>
@@ -35,7 +35,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisibles = false">取 消</el-button>
+          <el-button @click="dialogFile()">取 消</el-button>
           <el-button type="primary" @click="appends()">确 定</el-button>
         </div>
       </el-dialog>
@@ -341,11 +341,20 @@
       },
       append(data) {
         const newChild = {label: this.form.name,children: [],buttonable:true,value:this.form.name,};
+        // if(!this.form.name){
+        //   this.dialogFormVisible=false;
+        // }
         if (!data.children) {
           this.$set(data, 'children', []);
         }
         data.push(newChild);
+        this.apisuite.name=this.form.name;
+        api.saveApiSuite(this.apisuite).catch((response)=>{});
         this.dialogFormVisible=false;
+        this.form.name="";
+      },
+      dialogProject(){
+        this.dialogFormVisible = false;
         this.form.name="";
       },
       appends(){
@@ -363,6 +372,11 @@
         this.dialogFormVisibles=false;
         this.dialogvalue='';
         this.form.name='';
+      },
+      dialogFile(){
+        this.dialogFormVisibles = false;
+        this.dialogvalue="";
+        this.form.name="";
       },
       edit(node,data){
         let i;
@@ -480,6 +494,10 @@
           type: [],
           resource: '',
           desc: ''
+        },
+        apisuite:{
+          name:"",
+          projectId:-1,
         },
         editableTabs: [{
             title: 'Tab 1',
