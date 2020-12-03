@@ -34,11 +34,14 @@ public class ApiCaseSuiteController {
     @PostMapping("/save")
     public R saveSuite(@RequestBody ApiCaseSuite apiCaseSuite) {
         if (StringUtils.isEmpty(apiCaseSuite.getName())) {
-            return R.error().message("添加失败");
+            return R.error().message("文件夹名称不能为空！");
         }
-        apiCaseSuiteService.save(apiCaseSuite);
-        return R.ok().message("添加成功");
+        boolean flag = apiCaseSuiteService.save(apiCaseSuite);
+        if (flag) {
+            return R.ok();
+        } else {
+            return R.error();
+        }
     }
-
 }
 
