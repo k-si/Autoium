@@ -33,7 +33,7 @@ public class ApiCaseSuiteController {
      */
     @PostMapping("/save")
     public R saveSuite(@RequestBody ApiCaseSuite apiCaseSuite) {
-        if (StringUtils.isEmpty(apiCaseSuite)) {
+        if (StringUtils.isEmpty(apiCaseSuite.getName())) {
             return R.error().message("添加失败");
         }
         apiCaseSuiteService.save(apiCaseSuite);
@@ -41,5 +41,4 @@ public class ApiCaseSuiteController {
     }
 
 }
-
 

@@ -58,17 +58,6 @@ public class ApiCaseController {
     }
 
     /**
-     * 创建api文件夹
-     *
-     * @return
-     */
-    @PostMapping("/createSuite")
-    public R createApiModule(@RequestBody ApiCaseSuite suite) {
-        apiCaseSuiteService.save(suite);
-        return R.ok();
-    }
-
-    /**
      * 保存api
      *
      * @param apiCase
@@ -76,6 +65,7 @@ public class ApiCaseController {
      */
     @PostMapping("/save")
     public R saveApi(@RequestBody ApiCaseVo apiCase) {
+
         return R.ok();
     }
 
