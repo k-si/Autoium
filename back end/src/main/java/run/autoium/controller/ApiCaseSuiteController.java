@@ -51,7 +51,7 @@ public class ApiCaseSuiteController {
      * @return 成功 / 失败
      */
     @GetMapping("/delete/{id}")
-    public R deleteSuite(@PathVariable Long id) {
+    public R deleteSuite(@PathVariable String id) {
         boolean flag = apiCaseSuiteService.removeById(id);
         if (flag) {
             return R.ok();

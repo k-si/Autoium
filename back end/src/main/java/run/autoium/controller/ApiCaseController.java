@@ -7,13 +7,10 @@ import org.springframework.web.bind.annotation.*;
 
 import run.autoium.common.DataCode.response.R;
 import run.autoium.entity.po.ApiCase;
-import run.autoium.entity.po.ApiCaseSuite;
 import run.autoium.entity.vo.ApiCaseResultVo;
 import run.autoium.entity.vo.ApiCaseVo;
-import run.autoium.entity.vo.SimpleApiCaseVo;
 import run.autoium.entity.vo.SimpleApiSuiteVo;
 import run.autoium.service.impl.ApiCaseServiceImpl;
-import run.autoium.service.impl.ApiCaseSuiteServiceImpl;
 
 import java.util.List;
 
@@ -32,9 +29,6 @@ public class ApiCaseController {
 
     @Autowired
     private ApiCaseServiceImpl apiCaseService;
-
-    @Autowired
-    private ApiCaseSuiteServiceImpl apiCaseSuiteService;
 
     /**
      * 获取所有的目录及接口
@@ -73,6 +67,22 @@ public class ApiCaseController {
             return R.error().message("信息不完整");
         }
         boolean flag = apiCaseService.save(apiCase);
+        if (flag) {
+            return R.ok().data("id", apiCase.getId());
+        } else {
+            return R.error();
+        }
+    }
+
+    /**
+     * 通过id删除用例
+     *
+     * @param id 用例id
+     * @return 成功 / 失败
+     */
+    @GetMapping("/delete/{id}")
+    public R deleteApi(@PathVariable String id) {
+        boolean flag = apiCaseService.removeById(id);
         if (flag) {
             return R.ok();
         } else {
