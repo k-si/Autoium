@@ -59,5 +59,24 @@ public class ApiCaseSuiteController {
             return R.error();
         }
     }
+
+    /**
+     * 修改文件夹
+     *
+     * @param apiCaseSuite
+     * @return
+     */
+    @PostMapping("/update")
+    public R updateSuite(@RequestBody ApiCaseSuite apiCaseSuite) {
+        if (StringUtils.isEmpty(apiCaseSuite.getName())) {
+            return R.error().message("文件夹名称不能为空");
+        }
+        boolean flag = apiCaseSuiteService.updateById(apiCaseSuite);
+        if (flag) {
+            return R.ok().data("id", apiCaseSuite.getId());
+        } else {
+            return R.error();
+        }
+    }
 }
 

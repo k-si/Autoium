@@ -91,6 +91,27 @@ public class ApiCaseController {
     }
 
     /**
+     * 修改api
+     *
+     * @param apiCase
+     * @return
+     */
+    @PostMapping("/update")
+    public R updateApi(@RequestBody ApiCase apiCase) {
+        String name = apiCase.getName();
+        String suiteId = apiCase.getApiCaseSuiteId();
+        if (StringUtils.isEmpty(name) || StringUtils.isEmpty(suiteId)) {
+            return R.error().message("信息不完整");
+        }
+        boolean flag = apiCaseService.updateById(apiCase);
+        if (flag) {
+            return R.ok().data("id", apiCase.getId());
+        } else {
+            return R.error();
+        }
+    }
+
+    /**
      * 模拟api请求
      *
      * @param apiCase
