@@ -1,0 +1,11 @@
+{
+  "groups": [
+    {
+      "name": "http",
+      "type": "run.autoium.config.HttpClientConfig",
+      "sourceType": "run.autoium.config.HttpClientConfig"
+    }
+  ],
+  "properties": [],
+  "hints": []
+}
