@@ -11,6 +11,8 @@ public class SimpleApiCaseVo implements Serializable {
 
     private String id;
 
+    private String suiteId;
+
     private String label;
 
     private Boolean buttonable;

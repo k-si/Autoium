@@ -2,6 +2,7 @@ package run.autoium.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import run.autoium.common.DataCode.response.R;
@@ -9,6 +10,7 @@ import run.autoium.entity.po.ApiCase;
 import run.autoium.entity.po.ApiCaseSuite;
 import run.autoium.entity.vo.ApiCaseResultVo;
 import run.autoium.entity.vo.ApiCaseVo;
+import run.autoium.entity.vo.SimpleApiCaseVo;
 import run.autoium.entity.vo.SimpleApiSuiteVo;
 import run.autoium.service.impl.ApiCaseServiceImpl;
 import run.autoium.service.impl.ApiCaseSuiteServiceImpl;
@@ -64,9 +66,18 @@ public class ApiCaseController {
      * @return
      */
     @PostMapping("/save")
-    public R saveApi(@RequestBody ApiCaseVo apiCase) {
-
-        return R.ok();
+    public R saveApi(@RequestBody ApiCase apiCase) {
+        String name = apiCase.getName();
+        String suiteId = apiCase.getApiCaseSuiteId();
+        if (StringUtils.isEmpty(name) || StringUtils.isEmpty(suiteId)) {
+            return R.error().message("信息不完整");
+        }
+        boolean flag = apiCaseService.save(apiCase);
+        if (flag) {
+            return R.ok();
+        } else {
+            return R.error();
+        }
     }
 
     /**

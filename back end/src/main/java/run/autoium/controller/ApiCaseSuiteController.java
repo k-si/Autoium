@@ -34,7 +34,7 @@ public class ApiCaseSuiteController {
     @PostMapping("/save")
     public R saveSuite(@RequestBody ApiCaseSuite apiCaseSuite) {
         if (StringUtils.isEmpty(apiCaseSuite.getName())) {
-            return R.error().message("文件夹名称不能为空！");
+            return R.error().message("文件夹名称不能为空");
         }
         boolean flag = apiCaseSuiteService.save(apiCaseSuite);
         if (flag) {

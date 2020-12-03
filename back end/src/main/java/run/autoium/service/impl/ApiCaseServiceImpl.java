@@ -58,10 +58,8 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         List<ApiCase> apiCaseList = apiCaseService.list(null);
 
         // 遍历文件夹
-        for (int i = 0; i < apiCaseSuiteList.size(); i++) {
-            ApiCaseSuite suite = apiCaseSuiteList.get(i);
+        for (ApiCaseSuite suite : apiCaseSuiteList) {
             SimpleApiSuiteVo apiSuiteVo = new SimpleApiSuiteVo();
-//            BeanUtils.copyProperties(suite, apiSuiteVo);
             apiSuiteVo.setId(suite.getId());
             apiSuiteVo.setLabel(suite.getName());
             apiSuiteVo.setValue(suite.getName());
@@ -70,11 +68,9 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
             List<SimpleApiCaseVo> apiCaseVoList = new ArrayList<>();
 
             // 遍历所有用例，抽取属于同一个文件夹的用例
-            for (int j = 0; j < apiCaseList.size(); j++) {
-                ApiCase apiCase = apiCaseList.get(j);
+            for (ApiCase apiCase : apiCaseList) {
                 if (apiCase.getApiCaseSuiteId().equals(suite.getId())) {
                     SimpleApiCaseVo apiCaseVo = new SimpleApiCaseVo();
-//                    BeanUtils.copyProperties(apiCase, apiCaseVo);
                     apiCaseVo.setId(apiCase.getId());
                     apiCaseVo.setLabel(apiCase.getName());
                     apiCaseVo.setButtonable(false);
