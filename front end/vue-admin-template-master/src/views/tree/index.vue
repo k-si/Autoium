@@ -52,7 +52,7 @@
               type="primary" 
               icon="el-icon-edit" circle 
               size="mini" 
-              @click="() =>editNode(node,data)"
+              @click="() =>clickEdit(data)"
               style="background-color:rgba(255,255,255,0.15);color:#7C91F5;border:none;margin-left:40px;">
             </el-button>
             <el-dialog title="修改名称" :visible.sync="reName">
@@ -63,19 +63,29 @@
               </el-form>
               <div slot="footer" class="dialog-footer">
                 <el-button @click="reName = false">取 消</el-button>
-                <el-button type="primary" @click="() => edit(node,data)">确 定</el-button>
+                <el-button type="primary" @click="edit()">确 定</el-button>
               </div>
             </el-dialog>
             <el-button 
               type="danger" 
               icon="el-icon-delete" circle
               size="mini"
-              @click="() => remove(node, data)"
+              @click="() =>clickRemove(node,data)"
               style="background-color:rgba(255,255,255,0.15);color:#7C91F5;border:none">
             </el-button>
           </span>
         </span>
       </el-tree>
+      <el-dialog
+      title="提示"
+      :visible.sync="dialogVable"
+      width="30%">
+      <span>删除后文件无法回复，是否删除？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVable = false">取 消</el-button>
+        <el-button type="primary" @click="remove()">确 定</el-button>
+      </span>
+</el-dialog>
     </el-aside>
     
     <el-container>
@@ -304,10 +314,10 @@
 
   const list = ["get","post"];
 
+
   export default {
     created(){
       api.getAllApiCase().then((response) =>{
-        console.log(response)
         this.data =  response.data.all;
       })
     },
@@ -335,23 +345,31 @@
           })
         }
       },
-      editNode(node,data){
+      clickEdit(data){
         this.reName=true;
         this.editdata=data;
       },
       append(data) {
-        const newChild = {label: this.form.name,children: [],buttonable:true,value:this.form.name,};
-        // if(!this.form.name){
-        //   this.dialogFormVisible=false;
-        // }
+        const newChild = {label: this.form.name,children: [],buttonable:true,value:this.form.name,id:""};
         if (!data.children) {
-          this.$set(data, 'children', []);
+            this.$set(data, 'children', []);
         }
-        data.push(newChild);
         this.apisuite.name=this.form.name;
-        api.saveApiSuite(this.apisuite).catch((response)=>{});
+        api.saveApiSuite(this.apisuite)
+        .then((response) =>{
+          newChild.id=response.data.id;
+          console.log(response.data.id);
+          this.$message({
+          type: "success",
+          message:"新建成功",
+        });
+        })
+        .catch((response) =>{});
+        data.push(newChild);
         this.dialogFormVisible=false;
         this.form.name="";
+          
+          // this.apisuite.name="";
       },
       dialogProject(){
         this.dialogFormVisible = false;
@@ -359,14 +377,23 @@
       },
       appends(){
         let i;
-        const newChild={label:this.form.name,buttonable:false,value:this.form.name};
-
-        for(i=0;i<this.data.length;i++){
-          // console.log(this.data[i].label);
-          console.log(this.dialogvalue);
-          if(this.data[i].label==this.dialogvalue){
-            console.log(222)
-            this.data[i].children.push(newChild);
+        const newChild={label:this.form.name,buttonable:false,value:this.form.name,id:""};
+        if(this.form.name){
+          for(i=0;i<this.data.length;i++){
+            if(this.data[i].label==this.dialogvalue){
+              this.api.name=this.form.name;
+              this.api.apiCaseSuiteId=this.data[i].id;
+              api.saveApi(this.api)
+              .then((response) =>{
+                newChild.id=response.data.id;
+                this.$message({
+                type: "success",
+                message:"新建成功",
+              });
+              })
+              .catch((response) =>{});
+              this.data[i].children.push(newChild);
+            }
           }
         }
         this.dialogFormVisibles=false;
@@ -378,11 +405,11 @@
         this.dialogvalue="";
         this.form.name="";
       },
-      edit(node,data){
+      edit(){
         let i;
-        const parent = node.parent;
-        const children = parent.data.children || parent.data;
-        const index = children.findIndex(d => d.value === this.editdata.label);
+        // const parent = node.parent;
+        // const children = parent.data.children || parent.data;
+        // const index = children.findIndex(d => d.value === this.editdata.label);
         if(this.editdata.buttonable){
           for(i=0;i<this.data.length;i++){
             if(this.editdata.label==this.data[i].label){
@@ -391,31 +418,69 @@
             }
           }
         }else{
-            children[index].label=this.form.name;
-            children[index].value=this.form.name;
+            // children[index].label=this.form.name;
+            // children[index].value=this.form.name;
         }
         this.reName=false;
         this.form.name='';
         this.editdata='';
       },
-      remove(node, data) {
+      //提前保存被删除节点的数据，寻找删除节点的位置
+      clickRemove(node,data){
         let i;
+        this.dialogVable = true;
+        this.editdata=data;
         const parent = node.parent;
-        const children = parent.data.children || parent.data;
-        const index = children.findIndex(d => d.value === data.label);
-        if(data.buttonable){
-          console.log(data.label);
+        if(!data.buttonable){
           for(i=0;i<this.data.length;i++){
-            if(data.label==this.data[i].label){
+            if(parent.label==this.data[i].label){
+              this.indexparent=i;
+              break;
+            }
+          }
+        }
+      },
+      remove() {
+        let i;
+        let num = this.indexparent;
+        if(this.editdata.buttonable){
+          for(i=0;i<this.data.length;i++){
+            if(this.editdata.label==this.data[i].label){
+              api.deleteApiSuite(this.data[i].id)
+              .then((response) =>{
+                this.$message({
+                type: "success",
+                message:"删除成功"
+                })
+              })
+              .catch((response) =>{});
               this.data.splice(i,1);
+              this.editdata='';
+              break;
             }
           }
         }else{
-          children.splice(index,1);
+          for(i =0;i<this.data[num].children.length;i++){
+            console.log(this.data[num].children[i].label);
+            if(this.editdata.label==this.data[num].children[i].label){
+              api.deleteApi(this.data[num].children[i].id)
+              .then((response) =>{
+                this.$message({
+                type: "success",
+                message:"删除成功"
+                })
+              })
+              .catch((response) =>{});
+              this.data[num].children.splice(i,1);
+              this.editdata='';
+              break;
+            }
+          }
         }
+        this.dialogVable=false;
       },
       handleClick(tab, event) {
-        console.log(tab, event);
+        // console.log(tab, event);
       },
       clickInput:function(value,index){
         if(value.length==1&&index==this.tableData.length-1){
@@ -496,8 +561,13 @@
           desc: ''
         },
         apisuite:{
-          name:"",
-          projectId:-1,
+          name:'',
+          projectId:'-1',
+        },
+        api:{
+          name:'',
+          projectId:'-1',
+          apiCaseSuiteId:''
         },
         editableTabs: [{
             title: 'Tab 1',
@@ -537,6 +607,7 @@
         activeModel:true,
         dialogFormVisible: false,
         dialogFormVisibles:false,
+        dialogVable:false,
         reName:false,
         dialogvalue:'',
         labelPosition: 'right',
@@ -550,6 +621,7 @@
         params:'',
         activename:'projectname',
         editdata:'',
+        indexparent:0
       };
     }
   };
