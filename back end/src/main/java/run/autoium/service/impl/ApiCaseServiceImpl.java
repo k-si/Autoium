@@ -56,7 +56,7 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         ApiCase api = new ApiCase();
 
         // 将vo信息传递给po
-        api.setId(api.getId());
+        api.setId(vo.getId());
         api.setHost(vo.getHost());
         api.setPath(vo.getPath());
         api.setReqMethod(vo.getReqMethod());
@@ -71,23 +71,27 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         String poParams = JSON.toJSONString(voParams);
         api.setReqParams(poParams);
 
-        // 请求body的类型 0 json、1 form、2 file
-        api.setReqBodyType(vo.getReqBodyType());
-        switch (vo.getReqBodyType()) {
-            case 0:
-                api.setReqBodyJson(vo.getReqBodyJson());
-                break;
-            case 1:
+        // 如果是GET请求则不设置请求体
+        if (vo.getReqMethod().equals(MethodType.GET)) {
 
-                // vo中的form数据是list类型，在po中以json格式存储
-                List<MyParams> voForm = vo.getReqBodyForm();
-                String poForm = JSON.toJSONString(voForm);
-                api.setReqBodyForm(poForm);
+            // 请求body的类型 0 json、1 form、2 file
+            api.setReqBodyType(vo.getReqBodyType());
+            switch (vo.getReqBodyType()) {
+                case 0:
+                    api.setReqBodyJson(vo.getReqBodyJson());
+                    break;
+                case 1:
+
+                    // vo中的form数据是list类型，在po中以json格式存储
+                    List<MyParams> voForm = vo.getReqBodyForm();
+                    String poForm = JSON.toJSONString(voForm);
+                    api.setReqBodyForm(poForm);
+            }
         }
 
         api.setDescription(vo.getDescription());
-
-        return apiCaseService.save(api);
+        
+        return apiCaseService.updateById(api);
     }
 
     /**
