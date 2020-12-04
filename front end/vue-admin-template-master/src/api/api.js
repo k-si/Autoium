@@ -38,5 +38,26 @@ export default {
         url:`/api/delete/${id}`,
         method:'get'
       })
+    },
+    updateApiSuite(apisuite){
+      return request({
+        url:'/apiSuite/update',
+        method:'post',
+        data:apisuite
+      })
+    },
+    updateApi(api){
+      return request({
+        url:'/api/update',
+        method:'post',
+        data:api
+      })
+    },
+    saveApiDetail(api){
+      return request({
+        url:'/api/detailSave',
+        method:'post',
+        data:api
+      })
     }
 }

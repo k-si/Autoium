@@ -10,7 +10,7 @@
       <el-dialog title="创建文件夹" :visible.sync="dialogFormVisible">
         <el-form :model="form">
           <el-form-item label="文件夹名称：" :label-width="formLabelWidth">
-            <el-input v-model="form.name" autocomplete="off"></el-input>
+            <el-input v-model="form.name" autocomplete="off"  @keyup.enter.native="() => append(data)"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -31,7 +31,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="文件名称：" :label-width="formLabelWidth">
-            <el-input v-model="form.name" autocomplete="off"></el-input>
+            <el-input v-model="form.name" autocomplete="off" @keyup.enter.native="appends()"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -45,41 +45,47 @@
         :props="defaultProps"
         :filter-node-method="filterNode"
         ref="tree">
-        <span class="custom-tree-node" slot-scope="{ node, data }" @click="() =>treeClick(data)"> 
-          <span>{{ node.label }}</span>
-          <span>
-            <el-button 
-              type="primary" 
-              icon="el-icon-edit" circle 
-              size="mini" 
-              @click="() =>clickEdit(data)"
-              style="background-color:rgba(255,255,255,0.15);color:#7C91F5;border:none;margin-left:40px;">
-            </el-button>
-            <el-dialog title="修改名称" :visible.sync="reName">
-              <el-form :model="form">
-                <el-form-item label="重命名：" :label-width="formLabelWidth">
-                  <el-input v-model="form.name" autocomplete="off"></el-input>
-                </el-form-item>
-              </el-form>
-              <div slot="footer" class="dialog-footer">
-                <el-button @click="reName = false">取 消</el-button>
-                <el-button type="primary" @click="edit()">确 定</el-button>
-              </div>
-            </el-dialog>
-            <el-button 
-              type="danger" 
-              icon="el-icon-delete" circle
+          <span 
+            class="custom-tree-node" 
+            slot-scope="{ node, data }" 
+            @click="() =>treeClick(data)" 
+            @click.stop
+            style="display:inline-block;width:200px"
+            @mouseenter="onMouseoverEnvDelBtn($event)"
+            @mouseleave="onMouseleaveEnvDelBtn($event)"> 
+            <span style="display:inline-block">{{ node.label }}</span>
+            <span class="env-del-btn-span" style="display:none;float:right;">
+              <i 
+              class="el-icon-edit"
+              size="mini"
+              @click="() =>clickEdit(node,data)"
+              style="color:#7C91F5"></i>
+              <i 
+              class="el-icon-delete"
               size="mini"
               @click="() =>clickRemove(node,data)"
-              style="background-color:rgba(255,255,255,0.15);color:#7C91F5;border:none">
-            </el-button>
+              style="color:#7C91F5"></i>
+            </span>
+            <span>
+            </span>
           </span>
-        </span>
       </el-tree>
+      <el-dialog title="修改名称" :visible.sync="reName" :modal-append-to-body="false">
+        <el-form :model="form">
+          <el-form-item label="重命名：" :label-width="formLabelWidth">
+            <el-input v-model="form.name" autocomplete="off" @keyup.enter.native="edit()"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="reName = false">取 消</el-button>
+          <el-button type="primary" @click="edit()">确 定</el-button>
+        </div>
+      </el-dialog>
       <el-dialog
       title="提示"
       :visible.sync="dialogVable"
-      width="30%">
+      width="30%"
+      :modal-append-to-body="false">
       <span>删除后文件无法回复，是否删除？</span>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVable = false">取 消</el-button>
@@ -95,7 +101,7 @@
       
       <el-main>
         <div style="height:100%">
-          <el-form ref="form" :model="form" >
+          <el-form ref="form" :model="formInline" >
             <el-form :inline="true" :model="formInline" class="demo-form-inline" style="width:100%">
               <el-form-item label="环境域名：">
                 <el-input placeholder="请输入内容" v-model="formInline.name" clearable style="width:465px"></el-input>
@@ -108,8 +114,8 @@
               </el-form-item>
             </el-form>
             <el-form-item label="接口路径：">
-              <el-input v-model="form.url" placeholder="Request URL" class="input-with-select" style="width:835px">
-                <el-select v-model="form.option" slot="prepend" class="el-main-select">
+              <el-input v-model="formInline.url" placeholder="Request URL" class="input-with-select" style="width:835px">
+                <el-select v-model="formInline.option" slot="prepend" class="el-main-select">
                     <el-option label="get" value="get"></el-option>
                     <el-option label="post" value="post"></el-option>
                 </el-select>
@@ -119,14 +125,19 @@
             </el-form-item>
             <el-form> 
               <el-form-item label="接口备注：">
-                <el-input placeholder="请输入内容" v-model="textarea" style="width:90%"></el-input>
+                <el-input placeholder="请输入内容" v-model="formInline.textarea" style="width:1000px"></el-input>
               </el-form-item>
             </el-form>
+          </el-form>
+          <el-form>
+            <el-form-item>
+              <i class="el-icon-arrow-left" style="float:right;font-size:20px;" @click="responseClick()"></i>
+            </el-form-item>
           </el-form>
           <el-tabs v-model="activeName" @tab-click="handleClick">
             <el-tab-pane label="Params" name="first">
               <el-table
-                :data="tableData"
+                :data="paramsData"
                 height="250"
                 border
                 style="width: 100%">
@@ -152,7 +163,7 @@
                   width="50">
                   <template slot-scope="scope">
                     <el-button
-                      @click.native.prevent="deleteRow(scope.$index, tableData)"
+                      @click.native.prevent="deleteRow(scope.$index, paramsData)"
                       type="text"
                       size="small">
                       <i class="el-icon-delete"></i>
@@ -199,10 +210,10 @@
               </el-table>
             </el-tab-pane>
             <el-tab-pane label="Body" name="third">
-              <el-tabs>
+              <el-tabs v-model="bodyName">
                 <el-tab-pane name="bodyFirst" label="form">
                   <el-table
-                    :data="bodyData"
+                    :data="bodyForm"
                     height="250"
                     border
                     style="width: 100%">
@@ -228,7 +239,7 @@
                       width="50">
                       <template slot-scope="scope">
                         <el-button
-                          @click.native.prevent="deleteRow(scope.$index, bodyData)"
+                          @click.native.prevent="deleteRow(scope.$index, bodyForm)"
                           type="text"
                           size="small">
                           <i class="el-icon-delete"></i>
@@ -239,14 +250,14 @@
                 </el-tab-pane>
                 <el-tab-pane name="bodySecond" label="raw">
                   <vue-json-editor
-                    style="color:black;"
-                    v-model="resultInfo"
-                    :showBtns="false"    
-                    :mode="'code'"  
-                    lang="zh"
-                    @json-change="onJsonChange" 
-                    @json-save="onJsonSave"
-                    />
+                      style="color:black;"
+                      v-model="bodyJson"
+                      :showBtns="false"    
+                      :mode="'code'"  
+                      lang="zh"
+                      @json-change="onJsonChange" 
+                      @json-save="onJsonSave"
+                      />
                 </el-tab-pane>
               </el-tabs>
             </el-tab-pane>
@@ -265,8 +276,8 @@
           modal="true"
           wrapperClosable="true"
           size="50%">
-            <el-tabs>
-              <el-tab-pane label="响应信息" name="first">
+            <el-tabs v-model="responseName">
+              <el-tab-pane label="响应信息" name="resposefirst">
                 <el-tag type="success" size="small" v-model="response">{{response.message}}</el-tag>
                 <el-tag type="success" size="small"  v-model="response">响应时间：{{response.time}} ms</el-tag>
                 <el-tag type="info" size="small" v-model="response">body长度：{{response.len}}</el-tag>
@@ -279,8 +290,8 @@
                   </el-collapse-item>
                 </el-collapse>
               </el-tab-pane>
-              <el-tab-pane label="Headers" name="second">验证结果</el-tab-pane>
-              <el-tab-pane label="Body" name="third">异常信息</el-tab-pane>
+              <el-tab-pane label="Headers" name="responsesecond">验证结果</el-tab-pane>
+              <el-tab-pane label="Body" name="responsethird">异常信息</el-tab-pane>
             </el-tabs>
         </el-drawer>
     </div>
@@ -339,15 +350,13 @@
           api.getApiInfoById(data.id).then(response => {
             console.log(response)
             this.formInline.name=response.data.item.host;
-            this.form.url=response.data.item.path;
-            this.form.option=list[response.data.item.reqMethod];
-            this.textarea=response.data.item.description;
+            this.formInline.url=response.data.item.path;
+            this.formInline.option=list[response.data.item.reqMethod];
+            this.formInline.optionnum=response.data.item.reqMethod;
+            this.formInline.textarea=response.data.item.description;
           })
+          this.formInline.id=data.id;
         }
-      },
-      clickEdit(data){
-        this.reName=true;
-        this.editdata=data;
       },
       append(data) {
         const newChild = {label: this.form.name,children: [],buttonable:true,value:this.form.name,id:""};
@@ -405,21 +414,69 @@
         this.dialogvalue="";
         this.form.name="";
       },
+      onMouseoverEnvDelBtn(event) {
+          event.target.parentElement.querySelector(".env-del-btn-span").style.cssText += "display:inline-block";
+      },
+      onMouseleaveEnvDelBtn(event) {
+          event.target.parentElement.querySelector(".env-del-btn-span").style.cssText += "display:none"
+      },
+      clickEdit(node,data){
+        let i;
+        this.reName=true;
+        this.editdata=data;
+        const parent = node.parent;
+        if(!data.buttonable){
+          for(i=0;i<this.data.length;i++){
+            if(parent.label==this.data[i].label){
+              this.indexparent=i;
+              break;
+            }
+          }
+        }
+      },
       edit(){
         let i;
-        // const parent = node.parent;
-        // const children = parent.data.children || parent.data;
-        // const index = children.findIndex(d => d.value === this.editdata.label);
+        let num = this.indexparent;
         if(this.editdata.buttonable){
           for(i=0;i<this.data.length;i++){
             if(this.editdata.label==this.data[i].label){
               this.data[i].label=this.form.name;
               this.data[i].value=this.form.name;
+              this.apisuite.name=this.form.name;
+              this.apisuite.id=this.data[i].id;
+              api.updateApiSuite(this.apisuite)
+              .then((response) =>{
+                newChild.id=response.data.id;
+                this.$message({
+                type: "success",
+                message:"修改成功",
+              });
+              })
+              .catch((response) =>{});
+              break;
             }
           }
         }else{
-            // children[index].label=this.form.name;
-            // children[index].value=this.form.name;
+          for(i =0;i<this.data[num].children.length;i++){
+            console.log(this.data[num].children[i].label);
+            if(this.editdata.label==this.data[num].children[i].label){
+              this.data[num].children[i].label=this.form.name;
+              this.data[num].children[i].value=this.form.name;
+              this.api.name=this.form.name;
+              this.api.id=this.data[num].children[i].id;
+              this.api.apiCaseSuiteId=this.data[num].id;
+              api.updateApi(this.api)
+              .then((response) =>{
+                newChild.id=response.data.id;
+                this.$message({
+                type: "success",
+                message:"修改成功",
+              });
+              })
+              .catch((response) =>{});
+              break;
+            }
+          }
         }
         this.reName=false;
         this.form.name='';
@@ -483,8 +540,8 @@
         // console.log(tab, event);
       },
       clickInput:function(value,index){
-        if(value.length==1&&index==this.tableData.length-1){
-          this.tableData.push({
+        if(value.length==1&&index==this.paramsData.length-1){
+          this.paramsData.push({
             key:'',
             value:'',
           });
@@ -499,8 +556,8 @@
         }
       },
       bodyInput:function(value,index){
-        if(value.length==1&&index==this.bodyData.length-1){
-          this.bodyData.push({
+        if(value.length==1&&index==this.bodyForm.length-1){
+          this.bodyForm.push({
             key:'',
             value:'',
           });
@@ -525,11 +582,40 @@
       handleChange(val) {
         console.log(val);
       },
+      responseClick(){
+        this.table=true;
+      },
       sendClick(){
         this.table=true;
       },
       saveClick(){
-
+        let num;
+        if(this.bodyName=='bodyFirst'){
+          num=0;
+        }else{
+          num=1;
+        }
+        console.log(111);
+        const apisuite = {
+          id: this.formInline.id,
+          host: this.formInline.name,
+          path: this.formInline.url,
+          reqMethod: this.formInline.optionnum,
+          reqHeader:this.headerData,
+          reqParams:this.paramsData,
+          reqBodyType:num ,
+          reqBodyJson:this.bodyJson,
+          reqBodyForm:this.bodyForm,
+          description: this.formInline.textarea
+          };
+        api.saveApiDetail(apisuite)
+        .then((response) =>{
+          this.$message({
+          type: "success",
+          message:"保存成功",
+        });
+        })
+        .catch((response) =>{});
       }
     },
     data() {
@@ -553,21 +639,22 @@
         form: {
           name: '',
           region: '',
-          url:'',
-          option:'',
           delivery: false,
           type: [],
           resource: '',
-          desc: ''
+          desc: '',
+          id:''
         },
         apisuite:{
           name:'',
           projectId:'-1',
+          id:''
         },
         api:{
           name:'',
           projectId:'-1',
-          apiCaseSuiteId:''
+          apiCaseSuiteId:'',
+          id:''
         },
         editableTabs: [{
             title: 'Tab 1',
@@ -575,7 +662,7 @@
             content: 'Tab 1 content'
           }
         ],
-        tableData:[{
+        paramsData:[{
           key:'',
           value:'',
         }],
@@ -583,15 +670,19 @@
           key:'',
           value:'',
         }],
-        bodyData:[{
+        bodyForm:[{
           key:'',
           value:'',
         }],
+        bodyJson:{},
         formInline: {
           name: '',
-          region: ''
-        },
-        resultInfo: {
+          region: '',
+          textarea:'',
+          url:'',
+          option:'',
+          id:'',
+          optionnum:0
         },
         response:{
           message:200,
@@ -613,6 +704,8 @@
         labelPosition: 'right',
         formLabelWidth: '120px',
         activeName:"first",
+        bodyName:'bodyFirst',
+        responseName:'resposefirst',
         checked:true,
         labelPosition:"right",
         textarea:'',
@@ -621,7 +714,8 @@
         params:'',
         activename:'projectname',
         editdata:'',
-        indexparent:0
+        indexparent:0,
+        buttonenter:false
       };
     }
   };
