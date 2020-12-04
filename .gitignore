@@ -28,7 +28,6 @@ back end/mvnw
 back end/mvnw.cmd
 back end/target/
 back end/help.md
-back end/src/main/resources/application.yml
 back end/sql/
 ### NetBeans ###
 nbproject/private/
