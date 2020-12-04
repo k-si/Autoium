@@ -20,15 +20,14 @@ target/
 .springBeans
 
 ### IntelliJ IDEA ###
-back end/.idea
-back end/*.iws
-back end/*.iml
-back end/*.ipr
-back end/mvnw
-back end/mvnw.cmd
-back end/target/
-back end/help.md
-back end/sql/
+back end/autoium/.idea
+back end/autoium/*.iws
+back end/autoium/*.iml
+back end/autoium/*.ipr
+back end/autoium/mvnw
+back end/autoium/mvnw.cmd
+back end/autoium/target/
+back end/autoium/help.md
 ### NetBeans ###
 nbproject/private/
 build/*

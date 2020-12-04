@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.stereotype.Repository;
 
 /**
  * 包含多个测试用例的文件夹
@@ -20,6 +21,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="ApiCaseSuite对象", description="用例模块")
+@Repository
 public class ApiCaseSuite implements Serializable {
 
     /**

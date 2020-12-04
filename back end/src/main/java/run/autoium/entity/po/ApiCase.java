@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+import org.springframework.stereotype.Repository;
 
 /**
  * 接口测试用例的实体类，数据存于数据库内
@@ -20,6 +21,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @ApiModel(value="ApiCase对象", description="接口用例")
+@Repository
 public class ApiCase implements Serializable {
 
     /**
