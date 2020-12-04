@@ -64,7 +64,10 @@ public class HttpClientDriver {
             resultVo.setStatusCode(response.getStatusLine().getStatusCode());
             List<MyHeader> headerList = new ArrayList<>();
             for (Header h : response.getAllHeaders()) {
-                headerList.add(new MyHeader(h.getName(), h.getValue()));
+                MyHeader myHeader = new MyHeader();
+                myHeader.setKey(h.getName());
+                myHeader.setValue(h.getValue());
+                headerList.add(myHeader);
             }
             resultVo.setHeaders(headerList);
             resultVo.setBody(new String(bytes));

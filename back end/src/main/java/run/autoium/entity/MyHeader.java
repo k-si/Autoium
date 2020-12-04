@@ -9,10 +9,14 @@ public class MyHeader implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public MyHeader(String key, String value) {
-        this.key = key;
-        this.value = value;
+    public MyHeader() {
+
     }
+
+//    public MyHeader(String key, String value) {
+//        this.key = key;
+//        this.value = value;
+//    }
 
     private String key;
 

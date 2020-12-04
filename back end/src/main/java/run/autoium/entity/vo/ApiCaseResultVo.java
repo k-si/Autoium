@@ -1,7 +1,7 @@
 package run.autoium.entity.vo;
 
 import lombok.Data;
-import run.autoium.entity.MyAssertResult;
+import run.autoium.entity.MyAssert;
 import run.autoium.entity.MyHeader;
 
 import java.io.Serializable;
@@ -22,7 +22,7 @@ public class ApiCaseResultVo implements Serializable {
 
     private Integer respBodySize;
 
-    private List<MyAssertResult> assertResult;
+    private List<MyAssert> assertResult;
 
     private String exception;
 }

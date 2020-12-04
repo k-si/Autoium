@@ -1,19 +1,28 @@
 package run.autoium.controller;
 
 
+<<<<<<< HEAD
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.swagger.annotations.ApiParam;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
+=======
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+>>>>>>> 5af518775487b58c1a83f1ee9cbda3dae2313d41
 import org.springframework.web.bind.annotation.*;
 
 import run.autoium.common.DataCode.response.R;
 import run.autoium.entity.po.ApiCaseSuite;
+<<<<<<< HEAD
 import run.autoium.entity.vo.ApiCaseSuiteVo;
 import run.autoium.service.ApiCaseSuiteService;
 
 import java.util.List;
+=======
+import run.autoium.service.impl.ApiCaseSuiteServiceImpl;
+>>>>>>> 5af518775487b58c1a83f1ee9cbda3dae2313d41
 
 /**
  * <p>
@@ -24,11 +33,16 @@ import java.util.List;
  * @since 2020-11-28
  */
 @RestController
+<<<<<<< HEAD
 @RequestMapping("/autoium/api-case-suite")
+=======
+@RequestMapping("/apiSuite")
+>>>>>>> 5af518775487b58c1a83f1ee9cbda3dae2313d41
 @CrossOrigin
 public class ApiCaseSuiteController {
 
     @Autowired
+<<<<<<< HEAD
     private ApiCaseSuiteService apiCaseSuiteService;
 
     /**
@@ -103,10 +117,31 @@ public class ApiCaseSuiteController {
             return R.ok().data("case" , apiCaseSuite);
         }else{
             return R.error().message("查询失败");
+=======
+    private ApiCaseSuiteServiceImpl apiCaseSuiteService;
+
+    /**
+     * 保存用例文件夹、修改文件夹
+     *
+     * @param apiCaseSuite 用例文件夹po对象
+     * @return 如果文件夹名称为空，返回失败数据；反之返回正常数据
+     */
+    @PostMapping("/save")
+    public R saveSuite(@RequestBody ApiCaseSuite apiCaseSuite) {
+        if (StringUtils.isEmpty(apiCaseSuite.getName())) {
+            return R.error().message("文件夹名称不能为空");
+        }
+        boolean flag = apiCaseSuiteService.save(apiCaseSuite);
+        if (flag) {
+            return R.ok().data("id", apiCaseSuite.getId());
+        } else {
+            return R.error();
+>>>>>>> 5af518775487b58c1a83f1ee9cbda3dae2313d41
         }
     }
 
     /**
+<<<<<<< HEAD
      * 根据id删除用例
      * @param id
      * @return
@@ -120,10 +155,25 @@ public class ApiCaseSuiteController {
             return R.ok().message("删除成功");
         }else{
             return R.error().message("删除失败");
+=======
+     * 删除文件夹
+     *
+     * @param id suite id
+     * @return 成功 / 失败
+     */
+    @GetMapping("/delete/{id}")
+    public R deleteSuite(@PathVariable String id) {
+        boolean flag = apiCaseSuiteService.removeById(id);
+        if (flag) {
+            return R.ok();
+        } else {
+            return R.error();
+>>>>>>> 5af518775487b58c1a83f1ee9cbda3dae2313d41
         }
     }
 
     /**
+<<<<<<< HEAD
      * 添加一条用例
      * @param apiCaseSuite
      * @return
@@ -153,5 +203,24 @@ public class ApiCaseSuiteController {
         }
     }
 
+=======
+     * 修改文件夹
+     *
+     * @param apiCaseSuite
+     * @return
+     */
+    @PostMapping("/update")
+    public R updateSuite(@RequestBody ApiCaseSuite apiCaseSuite) {
+        if (StringUtils.isEmpty(apiCaseSuite.getName())) {
+            return R.error().message("文件夹名称不能为空");
+        }
+        boolean flag = apiCaseSuiteService.updateById(apiCaseSuite);
+        if (flag) {
+            return R.ok().data("id", apiCaseSuite.getId());
+        } else {
+            return R.error();
+        }
+    }
+>>>>>>> 5af518775487b58c1a83f1ee9cbda3dae2313d41
 }
 

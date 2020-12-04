@@ -13,6 +13,12 @@ public class ApiCaseVo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    private String id;
+
+    private String projectId;
+
+    private String apiCaseSuiteId;
+
     private String host;
 
     private String path;
@@ -35,7 +41,7 @@ public class ApiCaseVo implements Serializable {
 
     private List<MyParams> reqBodyForm;
 
-    private File reqBodyFile;
+//    private File reqBodyFile;
 
     private String examine;
 

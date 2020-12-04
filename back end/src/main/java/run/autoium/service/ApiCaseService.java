@@ -2,6 +2,11 @@ package run.autoium.service;
 
 import run.autoium.entity.po.ApiCase;
 import com.baomidou.mybatisplus.extension.service.IService;
+import run.autoium.entity.vo.ApiCaseResultVo;
+import run.autoium.entity.vo.ApiCaseVo;
+import run.autoium.entity.vo.SimpleApiSuiteVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +18,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ApiCaseService extends IService<ApiCase> {
 
+    Boolean detailSave(ApiCaseVo apiCaseVo);
+
+    List<SimpleApiSuiteVo> getAll();
+
+    ApiCaseVo getApiCaseById(Long id);
+
+    ApiCaseResultVo executeApi(ApiCaseVo apiCase);
 }

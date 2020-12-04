@@ -1,6 +1,7 @@
 package run.autoium.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +47,54 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
     private ApiCaseSuiteServiceImpl apiCaseSuiteService;
 
     /**
+     * 保存详细的接口信息
+     *
+     * @param vo
+     * @return
+     */
+    public Boolean detailSave(ApiCaseVo vo) {
+        ApiCase api = new ApiCase();
+
+        // 将vo信息传递给po
+        api.setId(vo.getId());
+        api.setHost(vo.getHost());
+        api.setPath(vo.getPath());
+        api.setReqMethod(vo.getReqMethod());
+
+        // vo中的header是list类型，在po中以json格式存储
+        List<MyHeader> voHeader = vo.getReqHeader();
+        String poHeader = JSON.toJSONString(voHeader);
+        api.setReqHeader(poHeader);
+
+        // vo中的param是list类型，在po中以json格式存储
+        List<MyParams> voParams = vo.getReqParams();
+        String poParams = JSON.toJSONString(voParams);
+        api.setReqParams(poParams);
+
+        // 如果是GET请求则不设置请求体
+        if (vo.getReqMethod().equals(MethodType.GET)) {
+
+            // 请求body的类型 0 json、1 form、2 file
+            api.setReqBodyType(vo.getReqBodyType());
+            switch (vo.getReqBodyType()) {
+                case 0:
+                    api.setReqBodyJson(vo.getReqBodyJson());
+                    break;
+                case 1:
+
+                    // vo中的form数据是list类型，在po中以json格式存储
+                    List<MyParams> voForm = vo.getReqBodyForm();
+                    String poForm = JSON.toJSONString(voForm);
+                    api.setReqBodyForm(poForm);
+            }
+        }
+
+        api.setDescription(vo.getDescription());
+        
+        return apiCaseService.updateById(api);
+    }
+
+    /**
      * 获取所有的apiSuite以及内部的api
      *
      * @return
@@ -58,10 +107,8 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         List<ApiCase> apiCaseList = apiCaseService.list(null);
 
         // 遍历文件夹
-        for (int i = 0; i < apiCaseSuiteList.size(); i++) {
-            ApiCaseSuite suite = apiCaseSuiteList.get(i);
+        for (ApiCaseSuite suite : apiCaseSuiteList) {
             SimpleApiSuiteVo apiSuiteVo = new SimpleApiSuiteVo();
-//            BeanUtils.copyProperties(suite, apiSuiteVo);
             apiSuiteVo.setId(suite.getId());
             apiSuiteVo.setLabel(suite.getName());
             apiSuiteVo.setValue(suite.getName());
@@ -70,11 +117,9 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
             List<SimpleApiCaseVo> apiCaseVoList = new ArrayList<>();
 
             // 遍历所有用例，抽取属于同一个文件夹的用例
-            for (int j = 0; j < apiCaseList.size(); j++) {
-                ApiCase apiCase = apiCaseList.get(j);
+            for (ApiCase apiCase : apiCaseList) {
                 if (apiCase.getApiCaseSuiteId().equals(suite.getId())) {
                     SimpleApiCaseVo apiCaseVo = new SimpleApiCaseVo();
-//                    BeanUtils.copyProperties(apiCase, apiCaseVo);
                     apiCaseVo.setId(apiCase.getId());
                     apiCaseVo.setLabel(apiCase.getName());
                     apiCaseVo.setButtonable(false);
