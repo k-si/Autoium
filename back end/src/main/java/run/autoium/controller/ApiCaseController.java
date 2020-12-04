@@ -54,13 +54,13 @@ public class ApiCaseController {
     }
 
     /**
-     * 保存api
+     * 保存简略的api信息
      *
      * @param apiCase
      * @return
      */
-    @PostMapping("/save")
-    public R saveApi(@RequestBody ApiCase apiCase) {
+    @PostMapping("/simpleSave")
+    public R saveSimpleApi(@RequestBody ApiCase apiCase) {
         String name = apiCase.getName();
         String suiteId = apiCase.getApiCaseSuiteId();
         if (StringUtils.isEmpty(name) || StringUtils.isEmpty(suiteId)) {
@@ -69,6 +69,22 @@ public class ApiCaseController {
         boolean flag = apiCaseService.save(apiCase);
         if (flag) {
             return R.ok().data("id", apiCase.getId());
+        } else {
+            return R.error();
+        }
+    }
+
+    /**
+     * 保存api详细信息
+     *
+     * @param apiCaseVo
+     * @return
+     */
+    @PostMapping("/detailSave")
+    public R saveDetailApi(@RequestBody ApiCaseVo apiCaseVo) {
+        Boolean flag = apiCaseService.detailSave(apiCaseVo);
+        if (flag) {
+            return R.ok();
         } else {
             return R.error();
         }

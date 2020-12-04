@@ -1,6 +1,7 @@
 package run.autoium.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -44,6 +45,50 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
 
     @Autowired
     private ApiCaseSuiteServiceImpl apiCaseSuiteService;
+
+    /**
+     * 保存详细的接口信息
+     *
+     * @param vo
+     * @return
+     */
+    public Boolean detailSave(ApiCaseVo vo) {
+        ApiCase api = new ApiCase();
+
+        // 将vo信息传递给po
+        api.setId(api.getId());
+        api.setHost(vo.getHost());
+        api.setPath(vo.getPath());
+        api.setReqMethod(vo.getReqMethod());
+
+        // vo中的header是list类型，在po中以json格式存储
+        List<MyHeader> voHeader = vo.getReqHeader();
+        String poHeader = JSON.toJSONString(voHeader);
+        api.setReqHeader(poHeader);
+
+        // vo中的param是list类型，在po中以json格式存储
+        List<MyParams> voParams = vo.getReqParams();
+        String poParams = JSON.toJSONString(voParams);
+        api.setReqParams(poParams);
+
+        // 请求body的类型 0 json、1 form、2 file
+        api.setReqBodyType(vo.getReqBodyType());
+        switch (vo.getReqBodyType()) {
+            case 0:
+                api.setReqBodyJson(vo.getReqBodyJson());
+                break;
+            case 1:
+
+                // vo中的form数据是list类型，在po中以json格式存储
+                List<MyParams> voForm = vo.getReqBodyForm();
+                String poForm = JSON.toJSONString(voForm);
+                api.setReqBodyForm(poForm);
+        }
+
+        api.setDescription(vo.getDescription());
+
+        return apiCaseService.save(api);
+    }
 
     /**
      * 获取所有的apiSuite以及内部的api
