@@ -349,6 +349,11 @@
             this.formInline.option=list[response.data.item.reqMethod];
             this.formInline.optionnum=response.data.item.reqMethod;
             this.formInline.textarea=response.data.item.description;
+            this.formInline.bodynum=response.data.item.reqBodyType;
+            this.headerData=response.data.item.reqHeader;
+            this.paramsData=response.data.item.reqParams;
+            this.bodyJson=response.data.item.reqBodyJson;
+            this.bodyForm=response.data.item.reqBodyForm;
           })
           this.formInline.id=data.id;
         }
@@ -677,7 +682,8 @@
           url:'',
           option:'',
           id:'',
-          optionnum:0
+          optionnum:0,
+          bodynum:0
         },
         response:{
           message:200,
