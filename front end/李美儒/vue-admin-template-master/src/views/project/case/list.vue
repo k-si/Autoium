@@ -102,11 +102,11 @@ export default {
     getList(page = 1) { // 这里的page=1,表明如果不传参数的话,这里page就默认为1,传参数的话,参数是多少,page就是多少
       this.page = page
       testcase
-        .getCaseListPage(this.page, this.list, this.caseQuery)
+        .getCaseListPage(this.page, this.limit, this.caseQuery)
         .then(response => {
           // response得到接口返回数据
           // 获得数据集合
-          this.list = response.data.rows
+          this.list = response.data.list
           // 获得总记录数
           this.total = response.data.total
           console.log(this.list)
