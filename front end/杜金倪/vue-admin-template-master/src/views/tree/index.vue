@@ -1,6 +1,6 @@
 <template>
   <el-container style="height:673px; border: 1px solid #eee;">
-    <el-aside width="200px" style="background-color: rgb(238,241,246);">
+    <el-aside width="300px" style="background-color: white;">
       <el-button type="primary" @click="dialogFormVisible = true" size="mini">新建项目+</el-button>
       <el-dialog title="" :visible.sync="dialogFormVisible">
         <el-tabs v-model="dialogsName" @tab-click="handleClick">
@@ -49,10 +49,13 @@
             slot-scope="{ node, data }" 
             @click="() =>treeClick(data)" 
             @click.stop
-            style="display:inline-block;width:200px"
+            style="display:inline-block;width:300px;font-size:15px;line-height:30px"
             @mouseenter="onMouseoverEnvDelBtn($event)"
             @mouseleave="onMouseleaveEnvDelBtn($event)"> 
-            <span style="display:inline-block">{{ node.label }}</span>
+            <span style="display:inline-block">
+              <i class="el-icon-folder-opened" size="mini" v-show="data.buttonable"></i>
+              {{ node.label }}
+            </span>
             <span class="env-del-btn-span" style="display:none;float:right;">
               <i 
               class="el-icon-edit"
@@ -93,23 +96,23 @@
 </el-dialog>
     </el-aside>
     
-    <el-container>
-      <el-main>
+    <el-container style="background-color:#D3DBE4">
+      <el-main style="background-color:white;margin-left:10px">
         <div style="height:100%">
           <el-form ref="form" :model="formInline" >
             <el-form :inline="true" :model="formInline" class="demo-form-inline" style="width:100%">
               <el-form-item label="环境域名：">
-                <el-input placeholder="请输入内容" v-model="formInline.name" clearable style="width:465px"></el-input>
+                <el-input placeholder="请输入内容" v-model="formInline.name" clearable style="width:400px"></el-input>
               </el-form-item>
               <el-form-item label="状态：" >
-                <el-select v-model="formInline.region" placeholder="活动区域" style="width:465px">
+                <el-select v-model="formInline.region" placeholder="活动区域" style="width:400px">
                   <el-option label="未完成" value="unover"></el-option>
                   <el-option label="已完成" value="over"></el-option>
                 </el-select>
               </el-form-item>
             </el-form>
             <el-form-item label="接口路径：">
-              <el-input v-model="formInline.url" placeholder="Request URL" class="input-with-select" style="width:835px">
+              <el-input v-model="formInline.url" placeholder="Request URL" class="input-with-select" style="width:700px">
                 <el-select v-model="formInline.option" slot="prepend" class="el-main-select">
                     <el-option label="get" value="get"></el-option>
                     <el-option label="post" value="post"></el-option>
@@ -120,7 +123,7 @@
             </el-form-item>
             <el-form> 
               <el-form-item label="接口备注：">
-                <el-input placeholder="请输入内容" v-model="formInline.textarea" style="width:1000px"></el-input>
+                <el-input placeholder="请输入内容" v-model="formInline.textarea" style="width:870px"></el-input>
               </el-form-item>
             </el-form>
           </el-form>
@@ -139,7 +142,7 @@
                 <el-table-column
                   prop="key"
                   label="key"
-                  width="528">
+                  width="475">
                   <template slot-scope="scope" >
                     <el-input v-model="scope.row.key" size="small"  style="width:100%" @input="clickInput(scope.row.key,scope.$index)"></el-input>
                   </template>
@@ -147,7 +150,7 @@
                 <el-table-column
                   prop="value"
                   label="value"
-                  width="530">
+                  width="475">
                   <template slot-scope="scope">
                     <el-input v-model="scope.row.value" size="small"  style="width:100%" ></el-input>
                   </template>
@@ -176,7 +179,7 @@
                 <el-table-column
                   prop="key"
                   label="请输入内容"
-                  width="528">
+                  width="475">
                   <template slot-scope="scope" >
                     <el-input v-model="scope.row.key" size="small" style="width:100%" @input="headerInput(scope.row.key,scope.$index)"></el-input>
                   </template>
@@ -184,7 +187,7 @@
                 <el-table-column
                   prop="value"
                   label="value"
-                  width="530">
+                  width="475">
                   <template slot-scope="scope">
                     <el-input v-model="scope.row.value" size="small"  style="width:100%"></el-input>
                   </template>
@@ -215,7 +218,7 @@
                     <el-table-column
                       prop="key"
                       label="key"
-                      width="528">
+                      width="475">
                       <template slot-scope="scopes" >
                         <el-input v-model="scopes.row.key" size="small"  style="width:100%" @input="bodyInput(scopes.row.key,scopes.$index)"></el-input>
                       </template>
@@ -223,7 +226,7 @@
                     <el-table-column
                       prop="value"
                       label="value"
-                      width="530">
+                      width="475">
                       <template slot-scope="scopes">
                         <el-input v-model="scopes.row.value" size="small"  style="width:100%" ></el-input>
                       </template>
@@ -296,7 +299,7 @@
 
 <style scoped>
 .el-header {
-  background-color: #CBDEF1;
+  background-color: white;
 }
 .el-aside {
   color: #333;
@@ -341,6 +344,7 @@
         return data.label.indexOf(value) !== -1;
       },
       treeClick(data){
+        newChild = {key:'',value:''}
         if(!data.buttonable){
           api.getApiInfoById(data.id).then(response => {
             console.log(response)
@@ -356,6 +360,13 @@
             this.bodyForm=response.data.item.reqBodyForm;
           })
           this.formInline.id=data.id;
+          if(!this.headerData){
+            this.headerData.push(newChild);
+          }else if(!this.paramsData){
+            this.paramsData.push(newChild);
+          }else if(!this.bodyForm){
+            this.bodyForm.push(newChild);
+          }
         }
       },
       append(data) {
