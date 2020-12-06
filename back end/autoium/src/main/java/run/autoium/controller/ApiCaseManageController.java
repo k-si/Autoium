@@ -9,7 +9,6 @@ import run.autoium.common.DataCode.response.R;
 import run.autoium.entity.po.ApiCase;
 import run.autoium.entity.vo.ApiCaseVo;
 import run.autoium.service.ApiCaseService;
-
 import java.util.List;
 
 /**
@@ -17,7 +16,7 @@ import java.util.List;
  * @since 2020-12-4
  */
 @RestController
-@RequestMapping("/autoium/api-case-suite")
+@RequestMapping("/api/manage")
 @CrossOrigin
 public class ApiCaseManageController {
     @Autowired
@@ -76,10 +75,10 @@ public class ApiCaseManageController {
 
         //获取数据
         long total = page.getTotal();
-        List<ApiCase> rows = page.getRecords();
+        List<ApiCase> list = page.getRecords();
 
         //返回
-        return R.ok().data("rows" , rows).data("total" , total);
+        return R.ok().data("rows" , list).data("total" , total);
     }
 
 
