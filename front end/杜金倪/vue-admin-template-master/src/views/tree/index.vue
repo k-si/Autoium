@@ -1,5 +1,5 @@
 <template>
-  <el-container style="height:673px; border: 1px solid #eee;">
+  <el-container style="height:100%; border: 1px solid #eee;">
     <el-aside width="300px" style="background-color: white;">
       <el-button type="primary" @click="dialogFormVisible = true" size="mini">新建项目+</el-button>
       <el-dialog title="" :visible.sync="dialogFormVisible">
@@ -99,20 +99,20 @@
     <el-container style="background-color:#D3DBE4">
       <el-main style="background-color:white;margin-left:10px">
         <div style="height:100%">
-          <el-form ref="form" :model="formInline" >
-            <el-form :inline="true" :model="formInline" class="demo-form-inline" style="width:100%">
-              <el-form-item label="环境域名：">
-                <el-input placeholder="请输入内容" v-model="formInline.name" clearable style="width:400px"></el-input>
+          <el-form ref="form" :model="formInline" style="width:100%">
+            <el-form :inline="true" :model="formInline" class="demo-form-inline">
+              <el-form-item label="环境域名：" style="width:45%">
+                <el-input placeholder="请输入内容" v-model="formInline.name" clearable ></el-input>
               </el-form-item>
-              <el-form-item label="状态：" >
-                <el-select v-model="formInline.region" placeholder="活动区域" style="width:400px">
+              <el-form-item label="状态："  style="width:45%">
+                <el-select v-model="formInline.region" placeholder="活动区域">
                   <el-option label="未完成" value="unover"></el-option>
                   <el-option label="已完成" value="over"></el-option>
                 </el-select>
               </el-form-item>
             </el-form>
-            <el-form-item label="接口路径：">
-              <el-input v-model="formInline.url" placeholder="Request URL" class="input-with-select" style="width:700px">
+            <el-form-item label="接口路径：" style="width:100%">
+              <el-input v-model="formInline.url" placeholder="Request URL" class="input-with-select" style="width:70%">
                 <el-select v-model="formInline.option" slot="prepend" class="el-main-select">
                     <el-option label="get" value="get"></el-option>
                     <el-option label="post" value="post"></el-option>
@@ -121,9 +121,9 @@
               <el-button type="primary" @click="sendClick()">Send</el-button>
               <el-button type="info" @click="saveClick()">Save</el-button>
             </el-form-item>
-            <el-form> 
+            <el-form style="width:100%"> 
               <el-form-item label="接口备注：">
-                <el-input placeholder="请输入内容" v-model="formInline.textarea" style="width:870px"></el-input>
+                <el-input placeholder="请输入内容" v-model="formInline.textarea" style="width:87%"></el-input>
               </el-form-item>
             </el-form>
           </el-form>
@@ -132,7 +132,7 @@
               <i class="el-icon-arrow-left" style="float:right;font-size:20px;" @click="responseClick()"></i>
             </el-form-item>
           </el-form>
-          <el-tabs v-model="activeName" @tab-click="handleClick">
+          <el-tabs v-model="activeName" @tab-click="handleClick" style="width:100%">
             <el-tab-pane label="Params" name="first">
               <el-table
                 :data="paramsData"
@@ -142,7 +142,7 @@
                 <el-table-column
                   prop="key"
                   label="key"
-                  width="475">
+                  style="width:45%">
                   <template slot-scope="scope" >
                     <el-input v-model="scope.row.key" size="small"  style="width:100%" @input="clickInput(scope.row.key,scope.$index)"></el-input>
                   </template>
@@ -150,7 +150,7 @@
                 <el-table-column
                   prop="value"
                   label="value"
-                  width="475">
+                  style="width:45%">
                   <template slot-scope="scope">
                     <el-input v-model="scope.row.value" size="small"  style="width:100%" ></el-input>
                   </template>
@@ -179,7 +179,7 @@
                 <el-table-column
                   prop="key"
                   label="请输入内容"
-                  width="475">
+                  style="width:45%">
                   <template slot-scope="scope" >
                     <el-input v-model="scope.row.key" size="small" style="width:100%" @input="headerInput(scope.row.key,scope.$index)"></el-input>
                   </template>
@@ -187,7 +187,7 @@
                 <el-table-column
                   prop="value"
                   label="value"
-                  width="475">
+                  style="width:45%">
                   <template slot-scope="scope">
                     <el-input v-model="scope.row.value" size="small"  style="width:100%"></el-input>
                   </template>
@@ -218,7 +218,7 @@
                     <el-table-column
                       prop="key"
                       label="key"
-                      width="475">
+                      style="width:45%">
                       <template slot-scope="scopes" >
                         <el-input v-model="scopes.row.key" size="small"  style="width:100%" @input="bodyInput(scopes.row.key,scopes.$index)"></el-input>
                       </template>
@@ -226,7 +226,7 @@
                     <el-table-column
                       prop="value"
                       label="value"
-                      width="475">
+                      style="width:45%">
                       <template slot-scope="scopes">
                         <el-input v-model="scopes.row.value" size="small"  style="width:100%" ></el-input>
                       </template>
@@ -313,6 +313,14 @@
 .jsoneditor-poweredBy{
      display: none;
   }
+html,body,#app,.el-container{
+        /*设置内部填充为0，几个布局元素之间没有间距*/
+        padding: 0px;
+         /*外部间距也是如此设置*/
+        margin: 0px;
+        /*统一设置高度为100%*/
+        height: 100%;
+    }
 
 </style>
 
