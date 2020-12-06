@@ -6,9 +6,9 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import run.autoium.common.DataCode.response.R;
-import run.autoium.entity.po.ApiCaseSuite;
-import run.autoium.entity.vo.ApiCaseSuiteVo;
-import run.autoium.service.ApiCaseSuiteService;
+import run.autoium.entity.po.ApiCase;
+import run.autoium.entity.vo.ApiCaseVo;
+import run.autoium.service.ApiCaseService;
 import java.util.List;
 
 /**
@@ -16,39 +16,39 @@ import java.util.List;
  * @since 2020-12-4
  */
 @RestController
-@RequestMapping("/autoium/api-case-suite")
+@RequestMapping("/api/manage")
 @CrossOrigin
 public class ApiCaseManageController {
     @Autowired
-    private ApiCaseSuiteService apiCaseSuiteService;
+    private ApiCaseService apiCaseService;
 
     /**
      * 条件分页查询数据
      * @param current 当前页
      * @param limit 每页大小
-     * @param apiCaseSuiteVo 可选条件
+     * @param apiCaseVo 可选条件
      * @return
      */
     @PostMapping("/PageCaseCondition/{current}/{limit}")
     public R getCaseListPage(@PathVariable("current") Long current,
                              @PathVariable("limit") Long limit,
-                             @RequestBody(required = false) ApiCaseSuiteVo apiCaseSuiteVo){
+                             @RequestBody(required = false) ApiCaseVo apiCaseVo){
         //创建分页查询
         //创建页面
-        Page<ApiCaseSuite> page = new Page<>(current , limit);
+        Page<ApiCase> page = new Page<>(current , limit);
         //创建查询对象的对象
-        QueryWrapper<ApiCaseSuite> wrapper = new QueryWrapper<>();
+        QueryWrapper<ApiCase> wrapper = new QueryWrapper<>();
 
         //判断条件，如果非空再去加条件，动态查询
-        if(apiCaseSuiteVo != null){
+        if(apiCaseVo != null){
 
-            String name = apiCaseSuiteVo.getName();
+            String name = apiCaseVo.getName();
 
-            String description = apiCaseSuiteVo.getDescription();
+            String description = apiCaseVo.getDescription();
 
-            String gmtCreateStart = apiCaseSuiteVo.getGmtCreateStart();
+            String gmtCreateStart = apiCaseVo.getGmtCreateStart();
 
-            String gmtCreateEnd = apiCaseSuiteVo.getGmtCreateEnd();
+            String gmtCreateEnd = apiCaseVo.getGmtCreateEnd();
 
 
             if(!Strings.isEmpty(name)){
@@ -64,21 +64,21 @@ public class ApiCaseManageController {
             }
 
             if(!Strings.isEmpty(gmtCreateEnd)){
-                wrapper.le("gmt_modified" , gmtCreateEnd);
+                wrapper.le("gmt_create" , gmtCreateEnd);
             }
         }
         //排序
-        wrapper.orderByAsc("id");
+        wrapper.orderByDesc("gmt_create");
 
         //查询
-        apiCaseSuiteService.page(page , wrapper);
+        apiCaseService.page(page , wrapper);
 
         //获取数据
         long total = page.getTotal();
-        List<ApiCaseSuite> list = page.getRecords();
+        List<ApiCase> list = page.getRecords();
 
         //返回
-        return R.ok().data("list" , list).data("total" , total);
+        return R.ok().data("rows" , list).data("total" , total);
     }
 
 
@@ -89,10 +89,10 @@ public class ApiCaseManageController {
      */
     @GetMapping("/getCase/{id}")
     public R getCaseById(@PathVariable("id") String id) {
-        ApiCaseSuite apiCaseSuite = apiCaseSuiteService.getById(id);
+        ApiCase apiCase = apiCaseService.getById(id);
 
-        if (apiCaseSuite != null) {
-            return R.ok().data("case", apiCaseSuite);
+        if (apiCase != null) {
+            return R.ok().data("case", apiCase);
         } else {
             return R.error().message("查询失败");
         }
@@ -103,10 +103,10 @@ public class ApiCaseManageController {
      * @param id
      * @return
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public R deleteApiCaseSuiteById(@PathVariable("id") String id) {
 
-        boolean b = apiCaseSuiteService.removeById(id);
+        boolean b = apiCaseService.removeById(id);
 
         if (b == true) {
             return R.ok().message("删除成功");
@@ -117,14 +117,13 @@ public class ApiCaseManageController {
 
     /**
      * 添加一条用例
-     * @param apiCaseSuite
+     * @param apiCase
      * @return
      */
     @PostMapping("/addCase")
-    public R addCase(@RequestBody ApiCaseSuite apiCaseSuite){
+    public R addCase(@RequestBody ApiCase apiCase){
 
-        System.out.println(apiCaseSuite.getProjectId());
-        boolean b = apiCaseSuiteService.save(apiCaseSuite);
+        boolean b = apiCaseService.save(apiCase);
 
         if(b == true){
             return R.ok().message("添加成功");
@@ -134,8 +133,8 @@ public class ApiCaseManageController {
     }
 
     @PostMapping("/updateCase")
-    public R updateCase(@RequestBody ApiCaseSuite testcase){
-        boolean b = apiCaseSuiteService.updateById(testcase);
+    public R updateCase(@RequestBody ApiCase apiCase){
+        boolean b = apiCaseService.updateById(apiCase);
 
 
         if(b){

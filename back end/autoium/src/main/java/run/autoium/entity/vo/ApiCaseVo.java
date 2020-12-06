@@ -14,6 +14,8 @@ public class ApiCaseVo implements Serializable {
 
     private String id;
 
+    private String name;
+
     private String projectId;
 
     private String apiCaseSuiteId;
@@ -47,4 +49,9 @@ public class ApiCaseVo implements Serializable {
     private String preAction;
 
     private String description;
+
+    //创建的起始时间和结束时间
+    private String gmtCreateStart;
+
+    private String gmtCreateEnd;
 }
