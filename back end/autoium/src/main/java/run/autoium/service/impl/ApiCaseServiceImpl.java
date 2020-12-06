@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONPObject;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.util.StringUtils;
 import run.autoium.common.DataCode.request.BodyType;
 import run.autoium.common.DataCode.MethodType;
 import run.autoium.entity.MyHeader;
@@ -151,13 +152,17 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
 
         // 数据库中header以json的格式存储，需要转回成对象
         String reqHeader = apiCase.getReqHeader();
-        List<MyHeader> myHeaders = AToBUtils.jsonToList(reqHeader, MyHeader.class);
-        apiCaseVo.setReqHeader(myHeaders);
+        if (!StringUtils.isEmpty(reqHeader)) {
+            List<MyHeader> myHeaders = AToBUtils.jsonToList(reqHeader, MyHeader.class);
+            apiCaseVo.setReqHeader(myHeaders);
+        }
 
         // 数据库中param以json的格式存储，需要转回成对象
         String reqParams = apiCase.getReqParams();
-        List<MyParams> myParams = AToBUtils.jsonToList(reqParams, MyParams.class);
-        apiCaseVo.setReqParams(myParams);
+        if (!StringUtils.isEmpty(reqParams)) {
+            List<MyParams> myParams = AToBUtils.jsonToList(reqParams, MyParams.class);
+            apiCaseVo.setReqParams(myParams);
+        }
 
         // 判断请求体类型
         if (apiCase.getReqBodyType() != null) {
