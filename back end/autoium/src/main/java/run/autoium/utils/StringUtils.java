@@ -10,8 +10,8 @@ public class StringUtils {
     /**
      * 利用异常检查字符串类型
      *
-     * @param str
-     * @return
+     * @param str 要被校验的字符串
+     * @return 请求体类型
      */
     public static Integer checkStringFormat(String str) {
         try {
@@ -35,5 +35,15 @@ public class StringUtils {
             }
         }
         return BodyType.TEXT;
+    }
+
+    /**
+     * 判断字符串是否为空串
+     *
+     * @param str 要被校验的字符串
+     * @return true / false
+     */
+    public static Boolean isEmpty(String str) {
+        return str == null || "".equals(str);
     }
 }
