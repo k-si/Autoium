@@ -143,7 +143,7 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
      */
     public ApiCaseVo getApiCaseById(Long id) {
         ApiCase apiCase = apiCaseService.getById(id);
-        // todo...
+
         ApiCaseVo apiCaseVo = new ApiCaseVo();
         apiCaseVo.setHost(apiCase.getHost());
         apiCaseVo.setPath(apiCase.getPath());
@@ -159,21 +159,23 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         List<MyParams> myParams = AToBUtils.jsonToList(reqParams, MyParams.class);
         apiCaseVo.setReqParams(myParams);
 
-        // 判断请求提类型
-        switch (apiCase.getReqBodyType()) {
+        // 判断请求体类型
+        if (apiCase.getReqBodyType() != null) {
+            switch (apiCase.getReqBodyType()) {
 
-            // 请求body的类型 0 json、1 form、2 file
-            case 0:
-                String json = apiCase.getReqBodyJson();
-                apiCaseVo.setReqBodyJson(json);
-                break;
-            case 1:
+                // 请求body的类型 0 json、1 form、2 file
+                case 0:
+                    String json = apiCase.getReqBodyJson();
+                    apiCaseVo.setReqBodyJson(json);
+                    break;
+                case 1:
 
-                // 数据库中form以json的格式存储，需要转回成对象
-                String form = apiCase.getReqBodyForm();
-                List<MyParams> myParams1 = AToBUtils.jsonToList(form, MyParams.class);
-                apiCaseVo.setReqBodyForm(myParams1);
-                break;
+                    // 数据库中form以json的格式存储，需要转回成对象
+                    String form = apiCase.getReqBodyForm();
+                    List<MyParams> myParams1 = AToBUtils.jsonToList(form, MyParams.class);
+                    apiCaseVo.setReqBodyForm(myParams1);
+                    break;
+            }
         }
 
         apiCaseVo.setDescription(apiCase.getDescription());
