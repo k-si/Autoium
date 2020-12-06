@@ -24,6 +24,7 @@ back end/autoium/.idea
 back end/autoium/*.iws
 back end/autoium/*.iml
 back end/autoium/*.ipr
+back end/autoium/.mvn/
 back end/autoium/mvnw
 back end/autoium/mvnw.cmd
 back end/autoium/target/
