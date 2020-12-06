@@ -1,22 +1,17 @@
 package run.autoium.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MyHeader implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    public MyHeader() {
-
-    }
-
-//    public MyHeader(String key, String value) {
-//        this.key = key;
-//        this.value = value;
-//    }
 
     private String key;
 

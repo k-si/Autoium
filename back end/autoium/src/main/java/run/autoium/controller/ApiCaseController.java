@@ -4,6 +4,7 @@ package run.autoium.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+
 import run.autoium.common.DataCode.response.R;
 import run.autoium.entity.po.ApiCase;
 import run.autoium.entity.vo.ApiCaseResultVo;
@@ -41,7 +42,7 @@ public class ApiCaseController {
     }
 
     /**
-     * 通过id查询接口
+     * 显示用例详细信息，通过id查询接口
      *
      * @param id
      * @return

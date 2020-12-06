@@ -1,11 +1,14 @@
 package run.autoium.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPObject;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import run.autoium.common.DataCode.MethodType;
+import org.springframework.context.annotation.Bean;
 import run.autoium.common.DataCode.request.BodyType;
+import run.autoium.common.DataCode.MethodType;
 import run.autoium.entity.MyHeader;
 import run.autoium.entity.MyParams;
 import run.autoium.entity.po.ApiCase;
@@ -16,6 +19,9 @@ import run.autoium.entity.vo.SimpleApiCaseVo;
 import run.autoium.entity.vo.SimpleApiSuiteVo;
 import run.autoium.mapper.ApiCaseMapper;
 import run.autoium.service.ApiCaseService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.stereotype.Service;
+import run.autoium.utils.AToBUtils;
 import run.autoium.utils.HttpClientDriver;
 
 import java.util.ArrayList;
@@ -87,7 +93,7 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         }
 
         api.setDescription(vo.getDescription());
-        
+
         return apiCaseService.updateById(api);
     }
 
@@ -131,7 +137,7 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
     }
 
     /**
-     * 通过id获取api信息
+     * 显示用例详细信息，通过id获取
      *
      * @return
      */
@@ -142,10 +148,39 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         apiCaseVo.setHost(apiCase.getHost());
         apiCaseVo.setPath(apiCase.getPath());
         apiCaseVo.setReqMethod(apiCase.getReqMethod());
+
+        // 数据库中header以json的格式存储，需要转回成对象
+        String reqHeader = apiCase.getReqHeader();
+        List<MyHeader> myHeaders = AToBUtils.jsonToList(reqHeader, MyHeader.class);
+        apiCaseVo.setReqHeader(myHeaders);
+
+        // 数据库中param以json的格式存储，需要转回成对象
+        String reqParams = apiCase.getReqParams();
+        List<MyParams> myParams = AToBUtils.jsonToList(reqParams, MyParams.class);
+        apiCaseVo.setReqParams(myParams);
+
+        // 判断请求提类型
+        switch (apiCase.getReqBodyType()) {
+
+            // 请求body的类型 0 json、1 form、2 file
+            case 0:
+                String json = apiCase.getReqBodyJson();
+                apiCaseVo.setReqBodyJson(json);
+                break;
+            case 1:
+
+                // 数据库中form以json的格式存储，需要转回成对象
+                String form = apiCase.getReqBodyForm();
+                List<MyParams> myParams1 = AToBUtils.jsonToList(form, MyParams.class);
+                apiCaseVo.setReqBodyForm(myParams1);
+                break;
+        }
+
         apiCaseVo.setDescription(apiCase.getDescription());
 //        BeanUtils.copyProperties(apiCase, apiCaseVo);
         return apiCaseVo;
     }
+
 
     /**
      * 将header转为map
