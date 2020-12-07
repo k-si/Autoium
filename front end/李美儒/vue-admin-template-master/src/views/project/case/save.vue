@@ -5,11 +5,15 @@
       <el-form-item label="用例名称">
         <el-input v-model="testcase.name"/>
       </el-form-item>
-      <!-- <el-form-item label="用例描述">
-        <el-input v-model="testcase.description"/>
-      </el-form-item> -->
       <el-form-item label="用例描述">
         <el-input v-model="testcase.description" :rows="10" type="textarea"/>
+      </el-form-item>
+      <el-form-item label="执行状态">
+        <el-select v-model="testcase.status" clearable placeholder="请选择">
+          <el-option :value="0" label="未执行"/>
+          <el-option :value="1" label="执行成功"/>
+          <el-option :value="2" label="执行失败"/>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <!-- :disabled防止重复点击添加,也就是点击添加之后不能再点击第二次 -->
@@ -29,7 +33,7 @@ export default {
     }
   },
   watch: { // 监听 监控到路由变化,每次变化都会执行
-    $router(to, from) { // 路由变化方式,只要路由发生变化方法就会执行
+    $route(to, from) { // 路由变化方式,只要路由发生变化方法就会执行
       this.init()
     }
   },
@@ -39,9 +43,9 @@ export default {
   methods: {
     init() {
     // 判断如果有id参数就调用,没有id参数就不调用根据id查询方法,也就不是修改
-      if (this.$router.params && this.$router.params.id) {
+      if (this.$route.params && this.$route.params.id) {
         // 从路径获取id值
-        const id = this.$router.params.id // 表示得到路由里面的参数值
+        const id = this.$route.params.id // 表示得到路由里面的参数值
         // 调用根据id查询方法
         this.getInfo(id) // 做数据回显
       } else { // 没有id的话不是修改,那么就表单中应该没有数据,所以应该清除表单数据

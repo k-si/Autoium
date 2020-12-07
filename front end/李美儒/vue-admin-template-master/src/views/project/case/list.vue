@@ -10,7 +10,7 @@
       </el-form-item>
       <el-form-item label="创建时间">
         <el-date-picker
-          v-model="caseQuery.begin"
+          v-model="caseQuery.gmtCreateStart"
           type="datetime"
           placeholder="选择开始时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -19,7 +19,7 @@
       </el-form-item>
       <el-form-item>
         <el-date-picker
-          v-model="caseQuery.end"
+          v-model="caseQuery.gmtCreateEnd"
           type="datetime"
           placeholder="选择截止时间"
           value-format="yyyy-MM-dd HH:mm:ss"
@@ -35,8 +35,10 @@
     <el-table
       v-loading="listLoading"
       :data="list"
+      :header-cell-style="{background:'#eef1f6',color:'#606266'}"
       element-loading-text="数据加载中"
       border
+      stripe
       fit
       highlight-current-row>
       <el-table-column
@@ -48,9 +50,16 @@
           {{ (page - 1) * limit + scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column prop="name" label="用例名称" width="80" />
-      <el-table-column prop="description" label="用例描述" />
-      <el-table-column prop="date" label="创建时间" width="160"/>
+      <el-table-column prop="name" label="用例名称" width="150" align="center"/>
+      <el-table-column prop="description" label="用例描述" align="center" />
+      <el-table-column prop="gmtCreate" label="创建时间" width="160" align="center"/>
+      <el-table-column label="执行状态" width="80" align="center">
+        <template slot-scope="scope">
+          <p v-if="scope.row.status===0">未执行</p>
+          <p v-if="scope.row.status===1">执行成功</p>
+          <p v-if="scope.row.status===2">执行失败</p>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" width="200" align="center">
         <template slot-scope="scope">
           <!-- 通过路由跳转进入数据回显界面,在路由index添加路由,但是不显示,也就是在添加用例页面就可以完成 -->
@@ -106,7 +115,7 @@ export default {
         .then(response => {
           // response得到接口返回数据
           // 获得数据集合
-          this.list = response.data.list
+          this.list = response.data.rows
           // 获得总记录数
           this.total = response.data.total
           console.log(this.list)
@@ -116,7 +125,7 @@ export default {
         }) // 请求失败
     },
     // 清空的方法
-    resData() {
+    resetData() {
       // 表单输入项数据清空
       this.caseQuery = {} // 因为是双向绑定,所以当对象中数据没了,那么也就意味着表单中输入数据没了
       // 查询所有讲师的数据
@@ -146,3 +155,11 @@ export default {
   }
 }
 </script>
+<style>
+    /* 鼠标滑过高亮显示 */
+.el-table tbody tr:hover>td { background-color:rgb(255, 255, 204)!important }
+
+    /*  斑马纹表格背景 */
+.el-table--striped .el-table__body tr.el-table__row--striped td { background:rgb(236, 245, 255)}
+
+</style>
