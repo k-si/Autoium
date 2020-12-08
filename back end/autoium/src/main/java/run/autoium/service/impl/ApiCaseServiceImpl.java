@@ -166,49 +166,20 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
 
         // 判断请求体类型
         if (apiCase.getReqBodyType() != null) {
-            switch (apiCase.getReqBodyType()) {
 
-                // 请求body的类型 0 json、1 form、2 file
-                case 0:
-                    String json = apiCase.getReqBodyJson();
-                    apiCaseVo.setReqBodyJson(json);
-                    break;
-                case 1:
+            // 填充json
+            String json = apiCase.getReqBodyJson();
+            apiCaseVo.setReqBodyJson(json);
 
-                    // 数据库中form以json的格式存储，需要转回成对象
-                    String form = apiCase.getReqBodyForm();
-                    List<MyParams> myParams1 = AToBUtils.jsonToList(form, MyParams.class);
-                    apiCaseVo.setReqBodyForm(myParams1);
-                    break;
-            }
+            // 填充form
+            String form = apiCase.getReqBodyForm();
+            List<MyParams> myParams = AToBUtils.jsonToList(form, MyParams.class);
+            apiCaseVo.setReqBodyForm(myParams);
         }
 
         apiCaseVo.setDescription(apiCase.getDescription());
-//        BeanUtils.copyProperties(apiCase, apiCaseVo);
+
         return apiCaseVo;
-    }
-
-
-    /**
-     * 将header转为map
-     *
-     * @param headers
-     * @return
-     */
-    private Map<String, String> headerToMap(List<MyHeader> headers) {
-        Map<String, String> map = new HashMap<>();
-        for (MyHeader header : headers) {
-            map.put(header.getKey(), header.getValue());
-        }
-        return map;
-    }
-
-    private Map<String, String> formToMap(List<MyParams> params) {
-        Map<String, String> map = new HashMap<>();
-        for (MyParams param : params) {
-            map.put(param.getKey(), param.getValue());
-        }
-        return map;
     }
 
     /**
@@ -220,12 +191,16 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
     public ApiCaseResultVo executeApi(ApiCaseVo apiCase) {
         Integer method = apiCase.getReqMethod();
         String url = apiCase.getHost() + apiCase.getPath();
-        Map<String, String> headers = headerToMap(apiCase.getReqHeader());
+        Map<String, String> headers = AToBUtils.listToMap(apiCase.getReqHeader(), MyHeader.class);
         ApiCaseResultVo apiCaseResult = null;
 
-        if (method.equals(MethodType.GET)) { // get请求
+        // get请求
+        if (method.equals(MethodType.GET)) {
             apiCaseResult = driver.doCommonGet(url, headers);
-        } else if ((method.equals(MethodType.POST))) { // post请求
+        }
+
+        // post请求
+        else if ((method.equals(MethodType.POST))) {
             if ((apiCase.getReqBodyType().equals(BodyType.JSON))) {
 
                 // body为json格式
@@ -233,16 +208,20 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
             } else if ((method.equals(BodyType.FORM))) {
 
                 // body为form格式
-                driver.doCommonPostByForm(url, headers, formToMap(apiCase.getReqBodyForm()));
+                driver.doCommonPostByForm(url, headers, AToBUtils.listToMap(apiCase.getReqBodyForm(), MyParams.class));
             } else if ((method.equals(BodyType.FILE))) {
+
                 // body为file格式
                 // todo...
             }
         } else if ((apiCase.getReqBodyType().equals(MethodType.PUT))) { // PUT请求
+
             // todo...
         } else { // DELETE请求
+
             // todo...
         }
+
         return apiCaseResult;
     }
 

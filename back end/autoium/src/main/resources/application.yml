@@ -11,16 +11,20 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://47.94.138.143:3306/autoium?characterEncoding=UTF-8&&serverTimezone=GMT%2B8
     # 武仪人
-    username: wuyiren
-    password: lengtong5655
+#    username: wuyiren
+#    password: lengtong5655
     # 王子健
 #    username: wzj123
 #    password: wzj123
     # 陈涵
 #    username: ibn5100
 #    password: 114514
+    # 吕帅慷
+    username: lsk2020
+    password: lsk2020
 server:
   port: 8888
+
 #返回json的全局时间格式
 spring.jackson.date-format: yyyy-MM-dd HH:mm:ss
 spring.jackson.time-zone: GMT+8
