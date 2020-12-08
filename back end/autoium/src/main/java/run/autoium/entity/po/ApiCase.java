@@ -144,4 +144,10 @@ public class ApiCase implements Serializable {
     @ApiModelProperty(value = "更新时间")
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date gmtModified;
+
+    /**
+     * 状态
+     */
+    @ApiModelProperty(value = "状态")
+    private int status;
 }

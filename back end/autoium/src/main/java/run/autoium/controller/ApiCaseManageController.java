@@ -2,13 +2,13 @@ package run.autoium.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import run.autoium.common.DataCode.response.R;
 import run.autoium.entity.po.ApiCase;
-import run.autoium.entity.vo.ApiCaseVo;
-import run.autoium.service.ApiCaseService;
+import run.autoium.entity.vo.ApiCaseManageVo;
+import run.autoium.service.ApiCaseManageService;
+
 import java.util.List;
 
 /**
@@ -19,66 +19,26 @@ import java.util.List;
 @RequestMapping("/api/manage")
 @CrossOrigin
 public class ApiCaseManageController {
-    @Autowired
-    private ApiCaseService apiCaseService;
 
+    @Autowired
+    private ApiCaseManageService apiCaseManageService;
     /**
      * 条件分页查询数据
      * @param current 当前页
      * @param limit 每页大小
-     * @param apiCaseVo 可选条件
+     * @param apiCaseManageVo 可选条件
      * @return
      */
     @PostMapping("/PageCaseCondition/{current}/{limit}")
     public R getCaseListPage(@PathVariable("current") Long current,
                              @PathVariable("limit") Long limit,
-                             @RequestBody(required = false) ApiCaseVo apiCaseVo){
-        //创建分页查询
-        //创建页面
-        Page<ApiCase> page = new Page<>(current , limit);
-        //创建查询对象的对象
-        QueryWrapper<ApiCase> wrapper = new QueryWrapper<>();
+                             @RequestBody(required = false) ApiCaseManageVo apiCaseManageVo){
 
-        //判断条件，如果非空再去加条件，动态查询
-        if(apiCaseVo != null){
+        Page<ApiCaseManageVo> page = new Page<>(current , limit);
 
-            String name = apiCaseVo.getName();
+        apiCaseManageService.getApiCasePageCondition(page, apiCaseManageVo);
 
-            String description = apiCaseVo.getDescription();
-
-            String gmtCreateStart = apiCaseVo.getGmtCreateStart();
-
-            String gmtCreateEnd = apiCaseVo.getGmtCreateEnd();
-
-
-            if(!Strings.isEmpty(name)){
-                wrapper.like("name" , name);
-            }
-
-            if(!Strings.isEmpty(description)){
-                wrapper.like("description" , description);
-            }
-
-            if(!Strings.isEmpty(gmtCreateStart)){
-                wrapper.ge("gmt_create" , gmtCreateStart);
-            }
-
-            if(!Strings.isEmpty(gmtCreateEnd)){
-                wrapper.le("gmt_create" , gmtCreateEnd);
-            }
-        }
-        //排序
-        wrapper.orderByDesc("gmt_create");
-
-        //查询
-        apiCaseService.page(page , wrapper);
-
-        //获取数据
-        long total = page.getTotal();
-        List<ApiCase> list = page.getRecords();
-
-        //返回
-        return R.ok().data("rows" , list).data("total" , total);
+        return R.ok().data("list" , page.getRecords()).data("total",page.getTotal());
     }
 
 
@@ -89,10 +49,11 @@ public class ApiCaseManageController {
      */
     @GetMapping("/getCase/{id}")
     public R getCaseById(@PathVariable("id") String id) {
-        ApiCase apiCase = apiCaseService.getById(id);
 
-        if (apiCase != null) {
-            return R.ok().data("case", apiCase);
+        ApiCaseManageVo apiCaseManageVo = apiCaseManageService.getById(id);
+
+        if (apiCaseManageVo != null) {
+            return R.ok().message("查询成功").data("case", apiCaseManageVo);
         } else {
             return R.error().message("查询失败");
         }
@@ -106,7 +67,7 @@ public class ApiCaseManageController {
     @DeleteMapping("/delete/{id}")
     public R deleteApiCaseSuiteById(@PathVariable("id") String id) {
 
-        boolean b = apiCaseService.removeById(id);
+        boolean b = apiCaseManageService.removeById(id);
 
         if (b == true) {
             return R.ok().message("删除成功");
@@ -123,7 +84,7 @@ public class ApiCaseManageController {
     @PostMapping("/addCase")
     public R addCase(@RequestBody ApiCase apiCase){
 
-        boolean b = apiCaseService.save(apiCase);
+        boolean b = apiCaseManageService.save(apiCase);
 
         if(b == true){
             return R.ok().message("添加成功");
@@ -134,10 +95,10 @@ public class ApiCaseManageController {
 
     @PostMapping("/updateCase")
     public R updateCase(@RequestBody ApiCase apiCase){
-        boolean b = apiCaseService.updateById(apiCase);
+        int i = apiCaseManageService.updateByID(apiCase);
 
 
-        if(b){
+        if(i > 0){
             return R.ok().message("更新成功");
         }else{
             return R.error().message("更新失败");
