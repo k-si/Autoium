@@ -1,16 +1,20 @@
 package run.autoium.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MyAssert implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     * 要验证的内容：响应码，响应头，响应体
+     * 要验证的内容：响应码，响应头，响应体（json、text、xml）
      */
     private Integer dataSource;
 

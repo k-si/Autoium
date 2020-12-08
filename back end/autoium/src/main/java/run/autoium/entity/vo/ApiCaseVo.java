@@ -1,6 +1,7 @@
 package run.autoium.entity.vo;
 
 import lombok.Data;
+import run.autoium.entity.MyAssert;
 import run.autoium.entity.MyHeader;
 import run.autoium.entity.MyParams;
 
@@ -44,7 +45,7 @@ public class ApiCaseVo implements Serializable {
 
 //    private File reqBodyFile;
 
-    private String examine;
+    private List<MyAssert> examine;
 
     private String preAction;
 

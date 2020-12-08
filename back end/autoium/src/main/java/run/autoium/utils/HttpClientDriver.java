@@ -37,8 +37,7 @@ public class HttpClientDriver {
     private RequestConfig config;
 
     /**
-     * 普通的get请求，不设置任何超时限制。参数在前端
-     * 中填入url
+     * 普通的get请求，不设置任何超时限制。
      *
      * @param url 请求地址
      * @return 响应的内容
@@ -60,7 +59,7 @@ public class HttpClientDriver {
             entity = response.getEntity();
             byte[] bytes = EntityUtils.toByteArray(entity);
 
-            // 设置vo对象的响应码，响应头，响应体，响应体长度，响应体格式
+            // 设置vo对象的响应码，响应头，响应体，响应体长度，响应体格式，断言结果
             resultVo.setStatusCode(response.getStatusLine().getStatusCode());
             List<MyHeader> headerList = new ArrayList<>();
             for (Header h : response.getAllHeaders()) {

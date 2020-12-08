@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.util.StringUtils;
 import run.autoium.common.DataCode.request.BodyType;
 import run.autoium.common.DataCode.MethodType;
+import run.autoium.entity.MyAssert;
 import run.autoium.entity.MyHeader;
 import run.autoium.entity.MyParams;
 import run.autoium.entity.po.ApiCase;
@@ -75,24 +76,20 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         String poParams = JSON.toJSONString(voParams);
         api.setReqParams(poParams);
 
-        // 如果是GET请求则不设置请求体
-        if (vo.getReqMethod().equals(MethodType.GET)) {
+        // 存储json请求体
+        api.setReqBodyJson(vo.getReqBodyJson());
 
-            // 请求body的类型 0 json、1 form、2 file
-            api.setReqBodyType(vo.getReqBodyType());
-            switch (vo.getReqBodyType()) {
-                case 0:
-                    api.setReqBodyJson(vo.getReqBodyJson());
-                    break;
-                case 1:
+        // 存储form请求体
+        List<MyParams> voForm = vo.getReqBodyForm();
+        String poForm = JSON.toJSONString(voForm);
+        api.setReqBodyForm(poForm);
 
-                    // vo中的form数据是list类型，在po中以json格式存储
-                    List<MyParams> voForm = vo.getReqBodyForm();
-                    String poForm = JSON.toJSONString(voForm);
-                    api.setReqBodyForm(poForm);
-            }
-        }
+        // 存储断言
+        List<MyAssert> voExamine = vo.getExamine();
+        String poExamine = JSON.toJSONString(voExamine);
+        api.setExamine(poExamine);
 
+        // 存储用例描述
         api.setDescription(vo.getDescription());
 
         return apiCaseService.updateById(api);
@@ -165,7 +162,7 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         }
 
         // 判断请求体类型
-        if (apiCase.getReqBodyType() != null) {
+        if (!StringUtils.isEmpty(apiCase.getReqBodyType())) {
 
             // 填充json
             String json = apiCase.getReqBodyJson();
@@ -177,6 +174,14 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
             apiCaseVo.setReqBodyForm(myParams);
         }
 
+        // 数据库中断言以json的格式存储，需要转回成对象
+        String reqExamine = apiCase.getExamine();
+        if (!StringUtils.isEmpty(reqExamine)) {
+            List<MyAssert> myAsserts = AToBUtils.jsonToList(reqExamine, MyAssert.class);
+            apiCaseVo.setExamine(myAsserts);
+        }
+
+        // 填充描述
         apiCaseVo.setDescription(apiCase.getDescription());
 
         return apiCaseVo;
@@ -197,6 +202,8 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         // get请求
         if (method.equals(MethodType.GET)) {
             apiCaseResult = driver.doCommonGet(url, headers);
+
+            // 执行断言
         }
 
         // post请求
