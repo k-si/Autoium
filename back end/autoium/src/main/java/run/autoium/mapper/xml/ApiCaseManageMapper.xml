@@ -12,10 +12,11 @@
         <result property="projectId" column="pid"/>
         <result property="apiCaseSuiteId" column="sid"/>
         <result property="id" column="id"/>
+        <result property="status" column="status"/>
     </resultMap>
 
     <select id="getApiCasePageCondition" resultMap="apiCasePageConditionResult">
-        select a.name name , a.description description , a.gmt_create gmt_create , a.gmt_modified gmt_modified , p.name pname , s.name sname , a.id id , p.id pid , s.id sid , a.description description
+        select a.name name , a.description description , a.gmt_create gmt_create , a.gmt_modified gmt_modified , p.name pname , s.name sname , a.id id , p.id pid , s.id sid , a.description description , a.status status
         from api_case a , project p , api_case_suite s
         where a.project_id = p.id and a.api_case_suite_id = s.id
         <if test="apiCaseManageVo != null and apiCaseManageVo.name != null and apiCaseManageVo.name != '' ">
@@ -33,7 +34,7 @@
     </select>
 
     <select id="getById" resultMap="apiCasePageConditionResult">
-        select a.name name , a.description description , a.gmt_create gmt_create , a.gmt_modified gmt_modified , p.name pname , s.name sname , a.id id , p.id pid , s.id sid , a.description description
+        select a.name name , a.description description , a.gmt_create gmt_create , a.gmt_modified gmt_modified , p.name pname , s.name sname , a.id id , p.id pid , s.id sid , a.description description , a.status status
         from api_case a , project p , api_case_suite s
         where a.project_id = p.id and a.api_case_suite_id = s.id and a.id = #{apiId}
     </select>
@@ -54,7 +55,7 @@
     </update>
 
     <select id="getAll" resultMap="apiCasePageConditionResult">
-        select a.name name , a.description description , a.gmt_create gmt_create , a.gmt_modified gmt_modified , p.name pname , s.name sname , a.id id , p.id pid , s.id sid , a.description description
+        select a.name name , a.description description , a.gmt_create gmt_create , a.gmt_modified gmt_modified , p.name pname , s.name sname , a.id id , p.id pid , s.id sid , a.description description , a.status status
         from api_case a , project p , api_case_suite s
         where a.project_id = p.id and a.api_case_suite_id = s.id;
     </select>

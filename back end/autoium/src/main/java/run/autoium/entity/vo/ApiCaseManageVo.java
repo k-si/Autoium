@@ -11,6 +11,7 @@ public class ApiCaseManageVo extends ApiCaseVo {
 
     private static final long serialVersionUID = 1L;
 
+    private Integer status;
 
     private String projectName;
 
