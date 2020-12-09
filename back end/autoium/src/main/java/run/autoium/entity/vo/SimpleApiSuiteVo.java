@@ -13,6 +13,8 @@ public class SimpleApiSuiteVo implements Serializable {
 
     private String id;
 
+    private String name;
+
     private String label;
 
     private String value;

@@ -2,7 +2,11 @@ package run.autoium.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 import run.autoium.entity.po.Project;
+import run.autoium.entity.vo.SimpleProjectVo;
+
+import java.util.List;
 
 /**
  * <p>

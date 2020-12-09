@@ -39,6 +39,7 @@ public class ApiCaseManage {
      * 所属模块名称
      */
     @ApiModelProperty(value = "所属模块名称")
+    @TableField(exist = false)
     private String projectName;
 
     /**
@@ -51,6 +52,7 @@ public class ApiCaseManage {
      * 所属模块名称
      */
     @ApiModelProperty(value = "所属模块名称")
+    @TableField(exist = false)
     private String apiCaseSuiteName;
 
 
@@ -84,12 +86,14 @@ public class ApiCaseManage {
      * 创建的起始时间
      */
     @ApiModelProperty(value = "创建的起始时间")
+    @TableField(exist = false)
     private String gmtCreateStart;
 
     /**
      * 创建的结束时间
      */
     @ApiModelProperty(value = "创建的结束时间")
+    @TableField(exist = false)
     private String gmtCreateEnd;
 
 

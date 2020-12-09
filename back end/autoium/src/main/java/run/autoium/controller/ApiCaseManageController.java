@@ -7,8 +7,14 @@ import org.springframework.web.bind.annotation.*;
 import run.autoium.common.DataCode.response.R;
 import run.autoium.entity.po.ApiCase;
 import run.autoium.entity.po.ApiCaseManage;
+import run.autoium.entity.po.ApiCaseSuite;
+import run.autoium.entity.po.Project;
 import run.autoium.entity.vo.ApiCaseManageVo;
+import run.autoium.entity.vo.SimpleApiSuiteVo;
+import run.autoium.entity.vo.SimpleProjectVo;
 import run.autoium.service.ApiCaseManageService;
+import run.autoium.service.ApiCaseSuiteService;
+import run.autoium.service.ProjectService;
 
 import java.util.List;
 
@@ -23,6 +29,14 @@ public class ApiCaseManageController {
 
     @Autowired
     private ApiCaseManageService apiCaseManageService;
+
+    @Autowired
+    private ProjectService projectService;
+
+    @Autowired
+    private ApiCaseSuiteService apiCaseSuiteService;
+
+
     /**
      * 条件分页查询数据
      * @param current 当前页
@@ -129,4 +143,22 @@ public class ApiCaseManageController {
             return R.error().message("更新失败");
         }
     }
+
+
+    @GetMapping("/getAllProject")
+    public R getAllProject(){
+
+        List<SimpleProjectVo> list = projectService.getAllName();
+
+        return R.ok().data("list" , list);
+    }
+
+    @GetMapping("/getAllSuite")
+    public R getAllSuite(){
+
+        List<SimpleApiSuiteVo> list = apiCaseSuiteService.getAllName();
+
+        return R.ok().data("list" , list);
+    }
+
 }

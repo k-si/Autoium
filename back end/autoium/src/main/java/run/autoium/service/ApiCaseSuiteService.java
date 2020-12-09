@@ -2,6 +2,9 @@ package run.autoium.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import run.autoium.entity.po.ApiCaseSuite;
+import run.autoium.entity.vo.SimpleApiSuiteVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import run.autoium.entity.po.ApiCaseSuite;
  */
 public interface ApiCaseSuiteService extends IService<ApiCaseSuite> {
 
+    public List<SimpleApiSuiteVo> getAllName();
 }
