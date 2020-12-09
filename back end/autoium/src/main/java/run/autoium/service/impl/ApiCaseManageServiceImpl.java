@@ -1,10 +1,12 @@
 package run.autoium.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import run.autoium.entity.po.ApiCase;
+import run.autoium.entity.po.ApiCaseManage;
 import run.autoium.entity.vo.ApiCaseManageVo;
 import run.autoium.entity.vo.ApiCaseVo;
 import run.autoium.mapper.ApiCaseManageMapper;
@@ -15,51 +17,58 @@ import java.util.Date;
 import java.util.List;
 
 @Service
-public class ApiCaseManageServiceImpl extends ServiceImpl<ApiCaseManageMapper, ApiCaseVo> implements ApiCaseManageService {
+public class ApiCaseManageServiceImpl extends ServiceImpl<ApiCaseManageMapper, ApiCaseManage> implements ApiCaseManageService {
 
     @Autowired
-    private ApiCaseManageMapper apiCaseManageMapper;
+    private ApiCaseManageMapper mapper;
 
     @Override
-    public List<ApiCaseManageVo> getApiCasePageCondition(Page<ApiCaseManageVo> page, ApiCaseManageVo apiCaseManageVo) {
+    public List<ApiCaseManage> getApiCasePageCondition(Page<ApiCaseManage> page, ApiCaseManage apiCaseManage) {
 
-        if(apiCaseManageVo != null && apiCaseManageVo.getName() != null && !StringUtils.isEmpty(apiCaseManageVo.getName())){
-            String name = apiCaseManageVo.getName();
-            apiCaseManageVo.setName("%" + name + "%");
+        QueryWrapper<ApiCaseManage> wrapper = new QueryWrapper<>();
+        
+        if(apiCaseManage != null){
+            String name = apiCaseManage.getName();
+
+            String description = apiCaseManage.getDescription();
+
+            String gmtCreateStart = apiCaseManage.getGmtCreateStart();
+
+            String gmtCreateEnd = apiCaseManage.getGmtCreateEnd();
+
+            if(name != null && !StringUtils.isEmpty(name)){
+                wrapper.like("a.name" , name);
+            }
+            
+            if(description != null && !StringUtils.isEmpty(description)){
+                wrapper.like("a.description" , description);
+            }
+            
+            if(gmtCreateStart != null && !StringUtils.isEmpty(gmtCreateStart)){
+                wrapper.ge("a.gmt_create" , gmtCreateStart);
+            }
+
+            if(gmtCreateEnd != null && !StringUtils.isEmpty(gmtCreateEnd)){
+                wrapper.le("a.gmt_create" , gmtCreateEnd);
+            }
         }
-        if(apiCaseManageVo != null && apiCaseManageVo.getDescription() != null && !StringUtils.isEmpty(apiCaseManageVo.getDescription())){
-            String name = apiCaseManageVo.getDescription();
-            apiCaseManageVo.setDescription("%" + name + "%");
-        }
-        List<ApiCaseManageVo> list = apiCaseManageMapper.getApiCasePageCondition(page, apiCaseManageVo);
+
+        List<ApiCaseManage> list = mapper.getApiCasePageCondition(page, wrapper);
 
         page.setRecords(list);
         return list;
     }
 
+
     @Override
-    public ApiCaseManageVo getById(String id) {
-        return apiCaseManageMapper.getById(id);
+    public ApiCaseManage getById(String id) {
+        return mapper.getById(id);
     }
 
     @Override
-    public boolean removeById(String id) {
-        return apiCaseManageMapper.removeById(id);
+    public List<ApiCaseManage> getAll() {
+        return mapper.getAll();
     }
 
-    @Override
-    public boolean save(ApiCase apiCase) {
-        return apiCaseManageMapper.save(apiCase);
-    }
 
-    @Override
-    public int updateByID(ApiCase apiCase) {
-        apiCase.setGmtModified(new Date());
-        return apiCaseManageMapper.updateByID(apiCase);
-    }
-
-    @Override
-    public List<ApiCaseManageVo> getAll() {
-        return apiCaseManageMapper.getAll();
-    }
 }

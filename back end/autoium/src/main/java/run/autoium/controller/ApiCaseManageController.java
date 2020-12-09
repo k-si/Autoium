@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import run.autoium.common.DataCode.response.R;
 import run.autoium.entity.po.ApiCase;
+import run.autoium.entity.po.ApiCaseManage;
 import run.autoium.entity.vo.ApiCaseManageVo;
 import run.autoium.service.ApiCaseManageService;
 
@@ -26,17 +27,17 @@ public class ApiCaseManageController {
      * 条件分页查询数据
      * @param current 当前页
      * @param limit 每页大小
-     * @param apiCaseManageVo 可选条件
+     * @param apiCaseManage 可选条件
      * @return
      */
     @PostMapping("/PageCaseCondition/{current}/{limit}")
     public R getCaseListPage(@PathVariable("current") Long current,
                              @PathVariable("limit") Long limit,
-                             @RequestBody(required = false) ApiCaseManageVo apiCaseManageVo){
+                             @RequestBody(required = false) ApiCaseManage apiCaseManage){
 
-        Page<ApiCaseManageVo> page = new Page<>(current , limit);
+        Page<ApiCaseManage> page = new Page<>(current , limit);
 
-        apiCaseManageService.getApiCasePageCondition(page, apiCaseManageVo);
+        apiCaseManageService.getApiCasePageCondition(page, apiCaseManage);
 
         return R.ok().data("list" , page.getRecords()).data("total",page.getTotal());
     }
@@ -50,21 +51,21 @@ public class ApiCaseManageController {
     @GetMapping("/getCase/{id}")
     public R getCaseById(@PathVariable("id") String id) {
 
-        ApiCaseManageVo apiCaseManageVo = apiCaseManageService.getById(id);
+        ApiCaseManage apiCaseManage = apiCaseManageService.getById(id);
 
-        if (apiCaseManageVo != null) {
-            return R.ok().message("查询成功").data("case", apiCaseManageVo);
+        if (apiCaseManage != null) {
+            return R.ok().message("查询成功").data("case", apiCaseManage);
         } else {
             return R.error().message("查询失败");
         }
     }
-    
+
     @GetMapping("/getAll")
     public R getAll(){
 
-        List<ApiCaseManageVo> list = apiCaseManageService.getAll();
+        List<ApiCaseManage> list = apiCaseManageService.getAll();
 
-        return R.ok().data("list" , list);
+        return R.ok().data("list" , list).data("total" , list.size());
     }
 
     /**
@@ -85,14 +86,25 @@ public class ApiCaseManageController {
     }
 
     /**
+     * 多选删除接口
+     * @param ids
+     * @return
+     */
+    @PostMapping("/delete")
+    public R deleteApiCaseSuites(@RequestBody List<Integer> ids){
+
+        return R.ok();
+    }
+
+    /**
      * 添加一条用例
-     * @param apiCase
+     * @param apiCaseManage
      * @return
      */
     @PostMapping("/addCase")
-    public R addCase(@RequestBody ApiCase apiCase){
+    public R addCase(@RequestBody ApiCaseManage apiCaseManage){
 
-        boolean b = apiCaseManageService.save(apiCase);
+        boolean b = apiCaseManageService.save(apiCaseManage);
 
         if(b == true){
             return R.ok().message("添加成功");
@@ -101,12 +113,17 @@ public class ApiCaseManageController {
         }
     }
 
+    /**
+     * 根据id更新
+     * @param apiCaseManage
+     * @return
+     */
     @PostMapping("/updateCase")
-    public R updateCase(@RequestBody ApiCase apiCase){
-        int i = apiCaseManageService.updateByID(apiCase);
+    public R updateCase(@RequestBody ApiCaseManage apiCaseManage){
+        boolean b = apiCaseManageService.updateById(apiCaseManage);
 
 
-        if(i > 0){
+        if(b == true){
             return R.ok().message("更新成功");
         }else{
             return R.error().message("更新失败");
