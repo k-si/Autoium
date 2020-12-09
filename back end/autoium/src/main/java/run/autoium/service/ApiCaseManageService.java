@@ -18,4 +18,6 @@ public interface ApiCaseManageService {
     public boolean save(ApiCase apiCase);
 
     public int updateByID(ApiCase apiCase);
+
+    public List<ApiCaseManageVo> getAll();
 }

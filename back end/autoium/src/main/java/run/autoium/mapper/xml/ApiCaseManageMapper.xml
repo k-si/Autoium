@@ -49,4 +49,10 @@
         set name = #{apiCase.name} , project_id = #{apiCase.projectId} , api_case_suite_id = #{apiCase.apiCaseSuiteId} , description = #{apiCase.description} , status = #{apiCase.status} , gmt_modified = #{apiCase.gmtModified}
         where id = #{apiCase.id};
     </update>
+
+    <select id="getAll" resultMap="apiCasePageConditionResult">
+        select a.name name , a.description description , a.gmt_create gmt_create , a.gmt_modified gmt_modified , p.name pname , s.name sname
+        from api_case a , project p , api_case_suite s
+        where a.project_id = p.id and a.api_case_suite_id = s.id;
+    </select>
 </mapper>

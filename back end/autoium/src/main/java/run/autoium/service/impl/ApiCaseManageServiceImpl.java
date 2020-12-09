@@ -57,4 +57,9 @@ public class ApiCaseManageServiceImpl extends ServiceImpl<ApiCaseManageMapper, A
         apiCase.setGmtModified(new Date());
         return apiCaseManageMapper.updateByID(apiCase);
     }
+
+    @Override
+    public List<ApiCaseManageVo> getAll() {
+        return apiCaseManageMapper.getAll();
+    }
 }

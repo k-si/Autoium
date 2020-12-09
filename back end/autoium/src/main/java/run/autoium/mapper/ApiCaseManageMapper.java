@@ -22,4 +22,6 @@ public interface ApiCaseManageMapper extends BaseMapper<ApiCaseVo> {
     public boolean save(@Param("apiCase") ApiCase apiCase);
 
     public int updateByID(@Param("apiCase") ApiCase apiCase);
+
+    public List<ApiCaseManageVo> getAll();
 }

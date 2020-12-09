@@ -58,6 +58,14 @@ public class ApiCaseManageController {
             return R.error().message("查询失败");
         }
     }
+    
+    @GetMapping("/getAll")
+    public R getAll(){
+
+        List<ApiCaseManageVo> list = apiCaseManageService.getAll();
+
+        return R.ok().data("list" , list);
+    }
 
     /**
      * 根据id删除用例
