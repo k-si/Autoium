@@ -15,6 +15,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import run.autoium.common.DataCode.response.ApiCaseStatus;
 import run.autoium.common.DataCode.response.BodyType;
 import run.autoium.entity.MyHeader;
 import run.autoium.entity.vo.ApiCaseResultVo;
@@ -63,15 +64,13 @@ public class HttpClientDriver {
             resultVo.setStatusCode(response.getStatusLine().getStatusCode());
             List<MyHeader> headerList = new ArrayList<>();
             for (Header h : response.getAllHeaders()) {
-                MyHeader myHeader = new MyHeader();
-                myHeader.setKey(h.getName());
-                myHeader.setValue(h.getValue());
-                headerList.add(myHeader);
+                headerList.add(new MyHeader(h.getName(), h.getValue()));
             }
             resultVo.setHeaders(headerList);
             resultVo.setBody(new String(bytes));
             resultVo.setRespBodySize(bytes.length);
-            resultVo.setBodyType(StringUtils.checkStringFormat(entity.getContentType().getValue()));
+            resultVo.setBodyType(ObjectUtils.checkStringFormat(entity.getContentType().getValue()));
+            resultVo.setFinish(ApiCaseStatus.finished);
         } catch (IOException e) {
             e.printStackTrace();
             resultVo.setBodyType(BodyType.NOBODY);
@@ -91,9 +90,12 @@ public class HttpClientDriver {
      * @param json   请求体
      * @return 响应内容
      */
-    public String doCommonPostByJson(String url, Map<String, String> header, JSONObject json) {
+    public ApiCaseResultVo doCommonPostByJson(String url, Map<String, String> header, JSONObject json) {
         CloseableHttpResponse response = null;
         HttpEntity entity = null;
+
+        // 向前端传输的调试结果对象
+        ApiCaseResultVo resultVo = new ApiCaseResultVo();
         try {
             HttpPost post = new HttpPost(url);
             if (header != null) {
@@ -107,13 +109,27 @@ public class HttpClientDriver {
             }
             response = client.execute(post);
             entity = response.getEntity();
-            return EntityUtils.toString(entity, "UTF-8");
+            byte[] bytes = EntityUtils.toByteArray(entity);
+
+            // 设置vo对象的响应码，响应头，响应体，响应体长度，响应体格式，断言结果
+            resultVo.setStatusCode(response.getStatusLine().getStatusCode());
+            List<MyHeader> headerList = new ArrayList<>();
+            for (Header h : response.getAllHeaders()) {
+                headerList.add(new MyHeader(h.getName(), h.getValue()));
+            }
+            resultVo.setHeaders(headerList);
+            resultVo.setBody(new String(bytes));
+            resultVo.setRespBodySize(bytes.length);
+            resultVo.setBodyType(ObjectUtils.checkStringFormat(entity.getContentType().getValue()));
+            resultVo.setFinish(ApiCaseStatus.finished);
         } catch (IOException e) {
             e.printStackTrace();
+            resultVo.setException(e.getMessage());
+            return resultVo;
         } finally {
             closeResources(response, entity);
         }
-        return null;
+        return resultVo;
     }
 
     /**
@@ -124,9 +140,12 @@ public class HttpClientDriver {
      * @param form   请求体
      * @return 响应的数据
      */
-    public String doCommonPostByForm(String url, Map<String, String> header, Map<String, String> form) {
+    public ApiCaseResultVo doCommonPostByForm(String url, Map<String, String> header, Map<String, String> form) {
         CloseableHttpResponse response = null;
         HttpEntity entity = null;
+
+        // 向前端传输的调试结果对象
+        ApiCaseResultVo resultVo = new ApiCaseResultVo();
         try {
             HttpPost post = new HttpPost(url);
             if (header != null) {
@@ -143,13 +162,27 @@ public class HttpClientDriver {
             }
             response = client.execute(post);
             entity = response.getEntity();
-            return EntityUtils.toString(entity, "UTF-8");
+            byte[] bytes = EntityUtils.toByteArray(entity);
+
+            // 设置vo对象的响应码，响应头，响应体，响应体长度，响应体格式，断言结果
+            resultVo.setStatusCode(response.getStatusLine().getStatusCode());
+            List<MyHeader> headerList = new ArrayList<>();
+            for (Header h : response.getAllHeaders()) {
+                headerList.add(new MyHeader(h.getName(), h.getValue()));
+            }
+            resultVo.setHeaders(headerList);
+            resultVo.setBody(new String(bytes));
+            resultVo.setRespBodySize(bytes.length);
+            resultVo.setBodyType(ObjectUtils.checkStringFormat(entity.getContentType().getValue()));
+            resultVo.setFinish(ApiCaseStatus.finished);
         } catch (IOException e) {
             e.printStackTrace();
+            resultVo.setException(e.getMessage());
+            return resultVo;
         } finally {
             closeResources(response, entity);
         }
-        return null;
+        return resultVo;
     }
 
     /**

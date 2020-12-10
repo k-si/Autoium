@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import run.autoium.entity.po.ApiCaseSuite;
 import run.autoium.entity.vo.SimpleApiSuiteVo;
+import run.autoium.mapper.ApiCaseMapper;
 import run.autoium.mapper.ApiCaseSuiteMapper;
 import run.autoium.service.ApiCaseSuiteService;
 
@@ -25,6 +26,9 @@ public class ApiCaseSuiteServiceImpl extends ServiceImpl<ApiCaseSuiteMapper, Api
     @Autowired
     private ApiCaseSuiteMapper apiCaseSuiteMapper;
 
+    @Autowired
+    private ApiCaseMapper apiCaseMapper;
+
     @Override
     public List<SimpleApiSuiteVo> getAllName() {
         List<ApiCaseSuite> apiCaseSuites = apiCaseSuiteMapper.selectList(null);
@@ -40,5 +44,17 @@ public class ApiCaseSuiteServiceImpl extends ServiceImpl<ApiCaseSuiteMapper, Api
             list.add(simpleApiSuiteVo);
         }
         return list;
+    }
+
+    /**
+     * 删除文件夹和文件夹下所有内容
+     * 
+     * @param id
+     * @return
+     */
+    public boolean deleteSuiteById(String id) {
+        int i = apiCaseSuiteMapper.deleteById(id);
+        int i1 = apiCaseMapper.deleteBySuiteId(id);
+        return i > 0 && i1 > 0;
     }
 }

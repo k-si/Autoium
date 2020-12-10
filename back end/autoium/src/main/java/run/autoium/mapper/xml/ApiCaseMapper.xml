@@ -2,4 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="run.autoium.mapper.ApiCaseMapper">
 
+    <delete id="deleteBySuiteId" >
+        delete from autoium.api_case where autoium.api_case.api_case_suite_id=#{suiteId}
+    </delete>
 </mapper>

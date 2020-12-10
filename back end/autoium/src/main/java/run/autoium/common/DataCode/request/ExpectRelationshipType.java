@@ -5,23 +5,23 @@ package run.autoium.common.DataCode.request;
  */
 public interface ExpectRelationshipType {
 
-    Integer equalTo = 0;
+    int equalTo = 0;
 
-    Integer greaterThan = 1;
+    int greaterThan = 1;
 
-    Integer greaterThanOrEqualTo = 2;
+    int greaterThanOrEqualTo = 2;
 
-    Integer lessThan = 3;
+    int lessThan = 3;
 
-    Integer lessThanOrEqualTo = 4;
+    int lessThanOrEqualTo = 4;
 
-    Integer contain = 5;
+    int contain = 5;
 
-    Integer contained = 6;
+    int contained = 6;
 
-    Integer doNotContain = 7;
+    int doNotContain = 7;
 
-    Integer startWith = 8;
+    int startWith = 8;
 
-    Integer endWith = 9;
+    int endWith = 9;
 }

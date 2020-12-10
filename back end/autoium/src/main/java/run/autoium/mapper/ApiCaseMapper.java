@@ -2,6 +2,7 @@ package run.autoium.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import run.autoium.entity.po.ApiCase;
 
 /**
@@ -14,5 +15,6 @@ import run.autoium.entity.po.ApiCase;
  */
 @Mapper
 public interface ApiCaseMapper extends BaseMapper<ApiCase> {
-
+    
+    int deleteBySuiteId(@Param("suiteId") String id); 
 }

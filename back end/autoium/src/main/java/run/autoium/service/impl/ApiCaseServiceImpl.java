@@ -1,15 +1,12 @@
 package run.autoium.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPObject;
-import org.springframework.beans.BeanUtils;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import run.autoium.common.DataCode.request.BodyType;
 import run.autoium.common.DataCode.MethodType;
+import run.autoium.common.DataCode.request.BodyType;
 import run.autoium.entity.MyAssert;
 import run.autoium.entity.MyHeader;
 import run.autoium.entity.MyParams;
@@ -21,13 +18,10 @@ import run.autoium.entity.vo.SimpleApiCaseVo;
 import run.autoium.entity.vo.SimpleApiSuiteVo;
 import run.autoium.mapper.ApiCaseMapper;
 import run.autoium.service.ApiCaseService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 import run.autoium.utils.AToBUtils;
 import run.autoium.utils.HttpClientDriver;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,6 +70,10 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         String poParams = JSON.toJSONString(voParams);
         api.setReqParams(poParams);
 
+        // 存储请求体类型，没有请求体时默认为1
+        Integer reqBodyType = vo.getReqBodyType();
+        api.setReqBodyType(reqBodyType);
+
         // 存储json请求体
         api.setReqBodyJson(vo.getReqBodyJson());
 
@@ -86,8 +84,11 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
 
         // 存储断言
         List<MyAssert> voExamine = vo.getExamine();
-        String poExamine = JSON.toJSONString(voExamine);
-        api.setExamine(poExamine);
+        System.out.println(voExamine);
+        if (voExamine != null) {
+            String poExamine = JSON.toJSONString(voExamine);
+            api.setExamine(poExamine);
+        }
 
         // 存储用例描述
         api.setDescription(vo.getDescription());
@@ -161,15 +162,19 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
             apiCaseVo.setReqParams(myParams);
         }
 
-        // 判断请求体类型
-        if (!StringUtils.isEmpty(apiCase.getReqBodyType())) {
+        // 填充请求体类型
+        Integer reqBodyType = apiCase.getReqBodyType();
+        apiCaseVo.setReqBodyType(reqBodyType);
 
-            // 填充json
-            String json = apiCase.getReqBodyJson();
+        // 填充json
+        String json = apiCase.getReqBodyJson();
+        if (!StringUtils.isEmpty(json)) {
             apiCaseVo.setReqBodyJson(json);
+        }
 
-            // 填充form
-            String form = apiCase.getReqBodyForm();
+        // 填充form
+        String form = apiCase.getReqBodyForm();
+        if (!StringUtils.isEmpty(form)) {
             List<MyParams> myParams = AToBUtils.jsonToList(form, MyParams.class);
             apiCaseVo.setReqBodyForm(myParams);
         }
@@ -195,6 +200,8 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
      */
     public ApiCaseResultVo executeApi(ApiCaseVo apiCase) {
         Integer method = apiCase.getReqMethod();
+        Integer bodyType = apiCase.getReqBodyType();
+        System.out.println("请求体类型：" + bodyType);
         String url = apiCase.getHost() + apiCase.getPath();
         Map<String, String> headers = AToBUtils.listToMap(apiCase.getReqHeader(), MyHeader.class);
         ApiCaseResultVo apiCaseResult = null;
@@ -204,19 +211,22 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
             apiCaseResult = driver.doCommonGet(url, headers);
 
             // 执行断言
+//            apiCaseResult.setAssertResult(apiCase.getExamine());
+//            AssertUtils.executeAsserts(apiCaseResult);
         }
 
         // post请求
         else if ((method.equals(MethodType.POST))) {
-            if ((apiCase.getReqBodyType().equals(BodyType.JSON))) {
+            if ((bodyType.equals(BodyType.JSON))) {
 
                 // body为json格式
-                driver.doCommonPostByJson(url, headers, JSON.parseObject(apiCase.getReqBodyJson()));
-            } else if ((method.equals(BodyType.FORM))) {
+                apiCaseResult = driver.doCommonPostByJson(url, headers, JSON.parseObject(apiCase.getReqBodyJson()));
+            } else if ((bodyType.equals(BodyType.FORM))) {
 
                 // body为form格式
-                driver.doCommonPostByForm(url, headers, AToBUtils.listToMap(apiCase.getReqBodyForm(), MyParams.class));
-            } else if ((method.equals(BodyType.FILE))) {
+                System.out.println(AToBUtils.listToMap(apiCase.getReqBodyForm(), MyParams.class));
+                apiCaseResult = driver.doCommonPostByForm(url, headers, AToBUtils.listToMap(apiCase.getReqBodyForm(), MyParams.class));
+            } else if ((bodyType.equals(BodyType.FILE))) {
 
                 // body为file格式
                 // todo...

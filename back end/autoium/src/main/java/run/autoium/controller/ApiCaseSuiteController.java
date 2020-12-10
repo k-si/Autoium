@@ -52,7 +52,7 @@ public class ApiCaseSuiteController {
      */
     @GetMapping("/delete/{id}")
     public R deleteSuite(@PathVariable String id) {
-        boolean flag = apiCaseSuiteService.removeById(id);
+        boolean flag = apiCaseSuiteService.deleteSuiteById(id);
         if (flag) {
             return R.ok();
         } else {

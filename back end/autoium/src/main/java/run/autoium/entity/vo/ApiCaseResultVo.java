@@ -25,4 +25,6 @@ public class ApiCaseResultVo implements Serializable {
     private List<MyAssert> assertResult;
 
     private String exception;
+
+    private Integer finish;
 }

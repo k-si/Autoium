@@ -46,7 +46,7 @@ public class MyAssert implements Serializable {
     /**
      * 实际值
      */
-    private String realValue;
+    private Object realValue;
 
     /**
      * 断言结果

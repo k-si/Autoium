@@ -1,10 +1,10 @@
 package run.autoium.controller;
 
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
 import run.autoium.common.DataCode.response.R;
 import run.autoium.entity.po.ApiCase;
 import run.autoium.entity.vo.ApiCaseResultVo;
@@ -80,6 +80,7 @@ public class ApiCaseController {
      * @param apiCaseVo
      * @return
      */
+    @ApiOperation(value = "保存接口详细信息")
     @PostMapping("/detailSave")
     public R saveDetailApi(@RequestBody ApiCaseVo apiCaseVo) {
         Boolean flag = apiCaseService.detailSave(apiCaseVo);

@@ -56,8 +56,10 @@ public class AToBUtils {
                 String key = (String) getKey.invoke(t);
                 Method getValue = t.getClass().getMethod("getValue");
                 getValue.setAccessible(true);
-                String value = (String) getKey.invoke(t);
-                map.put(key, value);
+                String value = (String) getValue.invoke(t);
+                if (key.length() != 0 && value.length() != 0) {
+                    map.put(key, value);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
