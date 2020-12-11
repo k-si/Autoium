@@ -49,6 +49,8 @@ public class ApiCaseVo implements Serializable {
 
     private String preAction;
 
+    private Integer finish;
+
     private String description;
 
     //创建的起始时间和结束时间

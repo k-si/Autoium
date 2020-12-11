@@ -16,4 +16,7 @@ public class SimpleApiCaseVo implements Serializable {
     private String label;
 
     private Boolean buttonable;
+
+    private Integer method;
+
 }

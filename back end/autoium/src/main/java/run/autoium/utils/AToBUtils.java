@@ -2,6 +2,7 @@ package run.autoium.utils;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import run.autoium.entity.MyAssert;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -37,6 +38,31 @@ public class AToBUtils {
             e.printStackTrace();
         }
         return list;
+    }
+
+    /**
+     * 断言的json字符串转为list
+     *
+     * @param examine 断言
+     * @return
+     */
+    public static List<MyAssert> examineToList(String examine) {
+        JSONArray array = JSONArray.parseArray(examine);
+        List<MyAssert> myAsserts = new ArrayList<>();
+        for (int i = 0; i < array.size(); i++) {
+            JSONObject object = array.getJSONObject(i);
+            MyAssert myAssert = new MyAssert();
+            myAssert.setDataSource(object.getInteger("dataSource"));
+            myAssert.setData(object.getString("data"));
+            myAssert.setExpress(object.getString("express"));
+            myAssert.setExpectRelation(object.getInteger("expectRelation"));
+            myAssert.setRelation(object.getString("relation"));
+            myAssert.setExpectType(object.getInteger("expectType"));
+            myAssert.setType(object.getString("type"));
+            myAssert.setExpectValue(object.getString("expectValue"));
+            myAsserts.add(myAssert);
+        }
+        return myAsserts;
     }
 
     /**

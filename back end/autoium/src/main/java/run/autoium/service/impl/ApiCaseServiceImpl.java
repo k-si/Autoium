@@ -1,6 +1,8 @@
 package run.autoium.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,7 @@ import run.autoium.entity.vo.SimpleApiSuiteVo;
 import run.autoium.mapper.ApiCaseMapper;
 import run.autoium.service.ApiCaseService;
 import run.autoium.utils.AToBUtils;
+import run.autoium.utils.AssertUtils;
 import run.autoium.utils.HttpClientDriver;
 
 import java.util.ArrayList;
@@ -44,6 +47,21 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
 
     @Autowired
     private ApiCaseSuiteServiceImpl apiCaseSuiteService;
+
+    @Autowired
+    private ApiCaseMapper apiCaseMapper;
+
+    /**
+     * 简单保存一条用例
+     *
+     * @param apiCase 用例对象
+     * @return 插入的数据大于0条，就认为插入成功
+     */
+    public Boolean simpleSave(ApiCase apiCase) {
+        apiCase.setReqMethod(0);
+        int insert = apiCaseMapper.insert(apiCase);
+        return insert > 0;
+    }
 
     /**
      * 保存详细的接口信息
@@ -84,11 +102,13 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
 
         // 存储断言
         List<MyAssert> voExamine = vo.getExamine();
-        System.out.println(voExamine);
         if (voExamine != null) {
             String poExamine = JSON.toJSONString(voExamine);
             api.setExamine(poExamine);
         }
+
+        // 存储用例状态，是否被执行
+        api.setStatus(vo.getFinish());
 
         // 存储用例描述
         api.setDescription(vo.getDescription());
@@ -125,6 +145,8 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
                     apiCaseVo.setId(apiCase.getId());
                     apiCaseVo.setLabel(apiCase.getName());
                     apiCaseVo.setButtonable(false);
+                    apiCaseVo.setMethod(apiCase.getReqMethod());
+
                     apiCaseVoList.add(apiCaseVo);
                 }
             }
@@ -182,9 +204,12 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         // 数据库中断言以json的格式存储，需要转回成对象
         String reqExamine = apiCase.getExamine();
         if (!StringUtils.isEmpty(reqExamine)) {
-            List<MyAssert> myAsserts = AToBUtils.jsonToList(reqExamine, MyAssert.class);
+            List<MyAssert> myAsserts = AToBUtils.examineToList(reqExamine);
             apiCaseVo.setExamine(myAsserts);
         }
+
+        // 填充是否执行
+        apiCaseVo.setFinish(apiCase.getStatus());
 
         // 填充描述
         apiCaseVo.setDescription(apiCase.getDescription());
@@ -201,7 +226,6 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
     public ApiCaseResultVo executeApi(ApiCaseVo apiCase) {
         Integer method = apiCase.getReqMethod();
         Integer bodyType = apiCase.getReqBodyType();
-        System.out.println("请求体类型：" + bodyType);
         String url = apiCase.getHost() + apiCase.getPath();
         Map<String, String> headers = AToBUtils.listToMap(apiCase.getReqHeader(), MyHeader.class);
         ApiCaseResultVo apiCaseResult = null;
@@ -211,8 +235,8 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
             apiCaseResult = driver.doCommonGet(url, headers);
 
             // 执行断言
-//            apiCaseResult.setAssertResult(apiCase.getExamine());
-//            AssertUtils.executeAsserts(apiCaseResult);
+            apiCaseResult.setAssertResult(apiCase.getExamine());
+            AssertUtils.executeAsserts(apiCaseResult);
         }
 
         // post请求
@@ -224,7 +248,6 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
             } else if ((bodyType.equals(BodyType.FORM))) {
 
                 // body为form格式
-                System.out.println(AToBUtils.listToMap(apiCase.getReqBodyForm(), MyParams.class));
                 apiCaseResult = driver.doCommonPostByForm(url, headers, AToBUtils.listToMap(apiCase.getReqBodyForm(), MyParams.class));
             } else if ((bodyType.equals(BodyType.FILE))) {
 

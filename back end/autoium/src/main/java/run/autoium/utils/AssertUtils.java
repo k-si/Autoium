@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import run.autoium.common.DataCode.ObjType;
 import run.autoium.common.DataCode.request.DataSourceType;
 import run.autoium.common.DataCode.request.ExpectRelationshipType;
+import run.autoium.common.DataCode.response.ApiCaseStatus;
 import run.autoium.entity.MyAssert;
 import run.autoium.entity.MyHeader;
 import run.autoium.entity.vo.ApiCaseResultVo;
@@ -24,9 +25,17 @@ public class AssertUtils {
      */
     public static void executeAsserts(ApiCaseResultVo resultVo) {
         List<MyAssert> assertResult = resultVo.getAssertResult();
+        boolean flag = true;
         if (assertResult != null) {
             for (MyAssert myAssert : assertResult) {
-                executeAssert(resultVo, myAssert);
+                boolean res = executeAssert(resultVo, myAssert);
+                myAssert.setResult(String.valueOf(res));
+                flag &= res; // 有一个断言失败，就表示执行失败
+            }
+            if (flag) {
+                resultVo.setFinish(ApiCaseStatus.success);
+            } else {
+                resultVo.setFinish(ApiCaseStatus.failed);
             }
         }
     }
@@ -38,7 +47,7 @@ public class AssertUtils {
      * @param myAssert
      * @return
      */
-    public static void executeAssert(ApiCaseResultVo resultVo, MyAssert myAssert) {
+    public static boolean executeAssert(ApiCaseResultVo resultVo, MyAssert myAssert) {
 //        MyAssert result = new MyAssert();
 
         // 设置断言结果的期望值
@@ -49,12 +58,6 @@ public class AssertUtils {
         Integer expectRelation = myAssert.getExpectRelation();
         Object realValue;
 
-//        result.setDataSource(dataSource);
-//        result.setExpress(express);
-//        result.setExpectType(expectType);
-//        result.setExpectValue(expectValue);
-//        result.setExpectRelation(expectRelation);
-
         switch (dataSource) {
 
             // 数据源为响应码
@@ -63,8 +66,10 @@ public class AssertUtils {
                 myAssert.setRealValue(realValue);
                 if (realValue == null) {
                     myAssert.setRealType(ObjType.empty);
+                    myAssert.setRealTypeText("NULL");
                 } else {
-                    myAssert.setRealType(ObjType.string);
+                    myAssert.setRealType(ObjType.number);
+                    myAssert.setRealTypeText("数值");
                 }
                 break;
 
@@ -108,9 +113,8 @@ public class AssertUtils {
                 // todo...
                 break;
         }
-
-        myAssert.setResult(examine(myAssert.getExpectType(), myAssert.getExpectValue(), myAssert.getExpectRelation(),
-                myAssert.getRealValue(), myAssert.getRealType()));
+        return examine(myAssert.getExpectType(), myAssert.getExpectValue(), myAssert.getExpectRelation(),
+                myAssert.getRealValue(), myAssert.getRealType());
     }
 
     /**
@@ -128,6 +132,8 @@ public class AssertUtils {
 
         // 如果类型不同直接判false
         if (!expectType.equals(realType)) {
+            System.out.println(expectType);
+            System.out.println(realType);
             return false;
         }
 
@@ -136,7 +142,7 @@ public class AssertUtils {
 
             // 相等
             case ExpectRelationshipType.equalTo:
-                return expectValue.equals(realValue);
+                return expectValue.equals(realValue.toString());
 
             // 大于
             case ExpectRelationshipType.greaterThan:

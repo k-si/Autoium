@@ -11,6 +11,7 @@ import run.autoium.entity.vo.ApiCaseResultVo;
 import run.autoium.entity.vo.ApiCaseVo;
 import run.autoium.entity.vo.SimpleApiSuiteVo;
 import run.autoium.service.impl.ApiCaseServiceImpl;
+import run.autoium.service.impl.ApiCaseSuiteServiceImpl;
 
 import java.util.List;
 
@@ -29,6 +30,9 @@ public class ApiCaseController {
 
     @Autowired
     private ApiCaseServiceImpl apiCaseService;
+
+    @Autowired
+    private ApiCaseSuiteServiceImpl apiCaseSuiteService;
 
     /**
      * 获取所有的目录及接口
@@ -66,7 +70,7 @@ public class ApiCaseController {
         if (StringUtils.isEmpty(name) || StringUtils.isEmpty(suiteId)) {
             return R.error().message("信息不完整");
         }
-        boolean flag = apiCaseService.save(apiCase);
+        boolean flag = apiCaseService.simpleSave(apiCase);
         if (flag) {
             return R.ok().data("id", apiCase.getId());
         } else {
@@ -84,6 +88,7 @@ public class ApiCaseController {
     @PostMapping("/detailSave")
     public R saveDetailApi(@RequestBody ApiCaseVo apiCaseVo) {
         Boolean flag = apiCaseService.detailSave(apiCaseVo);
+
         if (flag) {
             return R.ok();
         } else {

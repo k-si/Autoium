@@ -18,6 +18,8 @@ import java.util.List;
  */
 public interface ApiCaseService extends IService<ApiCase> {
 
+    Boolean simpleSave(ApiCase apiCase);
+
     Boolean detailSave(ApiCaseVo apiCaseVo);
 
     List<SimpleApiSuiteVo> getAll();

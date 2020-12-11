@@ -70,7 +70,6 @@ public class HttpClientDriver {
             resultVo.setBody(new String(bytes));
             resultVo.setRespBodySize(bytes.length);
             resultVo.setBodyType(ObjectUtils.checkStringFormat(entity.getContentType().getValue()));
-            resultVo.setFinish(ApiCaseStatus.finished);
         } catch (IOException e) {
             e.printStackTrace();
             resultVo.setBodyType(BodyType.NOBODY);
@@ -121,7 +120,6 @@ public class HttpClientDriver {
             resultVo.setBody(new String(bytes));
             resultVo.setRespBodySize(bytes.length);
             resultVo.setBodyType(ObjectUtils.checkStringFormat(entity.getContentType().getValue()));
-            resultVo.setFinish(ApiCaseStatus.finished);
         } catch (IOException e) {
             e.printStackTrace();
             resultVo.setException(e.getMessage());
@@ -174,7 +172,6 @@ public class HttpClientDriver {
             resultVo.setBody(new String(bytes));
             resultVo.setRespBodySize(bytes.length);
             resultVo.setBodyType(ObjectUtils.checkStringFormat(entity.getContentType().getValue()));
-            resultVo.setFinish(ApiCaseStatus.finished);
         } catch (IOException e) {
             e.printStackTrace();
             resultVo.setException(e.getMessage());

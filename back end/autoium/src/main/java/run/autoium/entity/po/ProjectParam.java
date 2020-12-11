@@ -37,20 +37,26 @@ public class ProjectParam implements Serializable {
     @ApiModelProperty(value = "所属项目ID")
     private String projectId;
 
-    @ApiModelProperty(value = "参数名称")
-    private String name;
-
     @ApiModelProperty(value = "参数类型：0:字符串;1:数值;2:数据库;3:布尔;4:数")
     private Integer type;
 
+    @ApiModelProperty(value = "参数环境")
+    private Integer environment;
+
     @ApiModelProperty(value = "参数键")
-    private String key;
+    private String name;
 
     @ApiModelProperty(value = "参数值")
-    private String value;
+    private String content;
+
+    @ApiModelProperty(value = "绑定的用例")
+    private String binding;
 
     @ApiModelProperty(value = "显示排序")
     private Integer sort;
+
+    @ApiModelProperty(value = "参数描述")
+    private String description;
 
     @ApiModelProperty(value = "创建时间")
     @TableField(fill = FieldFill.INSERT)
