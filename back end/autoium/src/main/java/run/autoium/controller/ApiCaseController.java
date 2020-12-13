@@ -31,9 +31,6 @@ public class ApiCaseController {
     @Autowired
     private ApiCaseServiceImpl apiCaseService;
 
-    @Autowired
-    private ApiCaseSuiteServiceImpl apiCaseSuiteService;
-
     /**
      * 获取所有的目录及接口
      *

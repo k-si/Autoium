@@ -55,6 +55,6 @@ public class ApiCaseSuiteServiceImpl extends ServiceImpl<ApiCaseSuiteMapper, Api
     public boolean deleteSuiteById(String id) {
         int i = apiCaseSuiteMapper.deleteById(id);
         int i1 = apiCaseMapper.deleteBySuiteId(id);
-        return i > 0 && i1 > 0;
+        return i > 0 && i1 >= 0;
     }
 }

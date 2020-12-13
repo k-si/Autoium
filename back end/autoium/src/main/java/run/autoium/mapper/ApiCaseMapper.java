@@ -16,5 +16,7 @@ import run.autoium.entity.po.ApiCase;
 @Mapper
 public interface ApiCaseMapper extends BaseMapper<ApiCase> {
     
-    int deleteBySuiteId(@Param("suiteId") String id); 
+    int deleteBySuiteId(@Param("suiteId") String id);
+
+    int updateStatusById(@Param("status") String status, @Param("id") String id);
 }

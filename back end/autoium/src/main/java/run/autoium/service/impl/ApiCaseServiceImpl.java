@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import run.autoium.common.DataCode.MethodType;
 import run.autoium.common.DataCode.request.BodyType;
+import run.autoium.common.DataCode.response.ApiCaseStatus;
 import run.autoium.entity.MyAssert;
 import run.autoium.entity.MyHeader;
 import run.autoium.entity.MyParams;
@@ -234,9 +235,10 @@ public class ApiCaseServiceImpl extends ServiceImpl<ApiCaseMapper, ApiCase> impl
         if (method.equals(MethodType.GET)) {
             apiCaseResult = driver.doCommonGet(url, headers);
 
-            // 执行断言
+            // 执行断言，并将断言结果填入数据库
             apiCaseResult.setAssertResult(apiCase.getExamine());
-            AssertUtils.executeAsserts(apiCaseResult);
+            boolean res = AssertUtils.executeAsserts(apiCaseResult);
+            apiCaseMapper.updateStatusById(String.valueOf(res ? ApiCaseStatus.success : ApiCaseStatus.failed), apiCase.getId());
         }
 
         // post请求

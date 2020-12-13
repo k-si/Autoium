@@ -5,4 +5,8 @@
     <delete id="deleteBySuiteId" >
         delete from autoium.api_case where autoium.api_case.api_case_suite_id=#{suiteId}
     </delete>
+
+    <update id="updateStatusById">
+        update autoium.api_case set autoium.api_case.status=#{status} where autoium.api_case.id=#{id}
+    </update>
 </mapper>

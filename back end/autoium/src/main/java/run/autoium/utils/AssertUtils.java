@@ -23,10 +23,12 @@ public class AssertUtils {
      * @param resultVo
      * @return
      */
-    public static void executeAsserts(ApiCaseResultVo resultVo) {
+    public static boolean executeAsserts(ApiCaseResultVo resultVo) {
         List<MyAssert> assertResult = resultVo.getAssertResult();
         boolean flag = true;
-        if (assertResult != null) {
+        if (assertResult == null || assertResult.size() == 0) {
+            resultVo.setFinish(ApiCaseStatus.unfinished);
+        } else {
             for (MyAssert myAssert : assertResult) {
                 boolean res = executeAssert(resultVo, myAssert);
                 myAssert.setResult(String.valueOf(res));
@@ -34,10 +36,13 @@ public class AssertUtils {
             }
             if (flag) {
                 resultVo.setFinish(ApiCaseStatus.success);
+                return true;
             } else {
                 resultVo.setFinish(ApiCaseStatus.failed);
+                return false;
             }
         }
+        return false;
     }
 
     /**
@@ -132,8 +137,6 @@ public class AssertUtils {
 
         // 如果类型不同直接判false
         if (!expectType.equals(realType)) {
-            System.out.println(expectType);
-            System.out.println(realType);
             return false;
         }
 
