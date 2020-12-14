@@ -1,9 +1,30 @@
 <template>
   <div class="app-container">
-    用例添加
     <el-form label-width="120px">
       <el-form-item label="用例名称">
         <el-input v-model="testcase.name"/>
+      </el-form-item>
+      <el-form-item label="所属项目">
+        <el-select v-model="testcase.projectName" filterable placeholder="请选择" @change="selectProjectId">
+          <el-option
+            v-for="item in projects"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+            <span>{{ item.label }}</span>
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="所属模块">
+        <el-select v-model="testcase.apiCaseSuiteName" filterable placeholder="请选择" @change="selectApiCaseSuiteId">
+          <el-option
+            v-for="item in apiCaseSuites"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value">
+            <span>{{ item.label }}</span>
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item label="用例描述">
         <el-input v-model="testcase.description" :rows="10" type="textarea"/>
@@ -24,12 +45,15 @@
 </template>
 <script>
 // 添加用例这里需要排序,让它每次新添加的用例都显示在第一个(可以根据创建时间排序)
-import testcaseApi from '@/api/project/case'
+import testcaseApi from '@/api/case'
 export default {
   data() {
     return {
       testcase: {},
-      saveBtnDisabled: false // 表示保存按钮是否禁用
+      saveBtnDisabled: false, // 表示保存按钮是否禁用
+      projects: [],
+      apiCaseSuites: [],
+      item: {}
     }
   },
   watch: { // 监听 监控到路由变化,每次变化都会执行
@@ -39,6 +63,8 @@ export default {
   },
   created() { // 页面渲染之前执行
     this.init()
+    this.getProjects()
+    this.getApiCaseSuites()
   },
   methods: {
     init() {
@@ -64,6 +90,7 @@ export default {
     saveOrUpdate() {
     // 判断是修改还是添加
     // 根据testcase是否有id
+      console.log(this.options)
       if (!this.testcase.id) {
         // 添加
         this.saveCase()
@@ -97,6 +124,48 @@ export default {
           // 回到用例列表页面中去 路由跳转
           this.$router.push({ path: '/case/table' })
         })
+    },
+    getProjects() {
+      const obj = this
+      let item = {}
+      testcaseApi.getAllProject().then((response) => {
+        for (let i = 0; i < response.data.list.length; i++) {
+          item = response.data.list[i]
+          item.value = '选项' + (i + 1)
+          item.label = item.name
+          obj.projects.push(item)
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    getApiCaseSuites() {
+      const obj = this
+      let item = {}
+      testcaseApi.getAllSuite().then((response) => {
+        for (let i = 0; i < response.data.list.length; i++) {
+          item = response.data.list[i]
+          item.value = '选项' + (i + 1)
+          item.label = item.name
+          obj.apiCaseSuites.push(item)
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    selectProjectId(value) {
+      let selectItem = {}
+      selectItem = this.projects.find((item) => {
+        return item.value === value
+      })
+      this.testcase.projectId = selectItem.id
+    },
+    selectApiCaseSuiteId(value) {
+      let selectItem = {}
+      selectItem = this.apiCaseSuites.find((item) => {
+        return item.value === value
+      })
+      this.testcase.apiCaseSuiteId = selectItem.id
     }
   }
 }

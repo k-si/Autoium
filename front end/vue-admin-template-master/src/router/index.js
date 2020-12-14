@@ -36,25 +36,25 @@ export const constantRouterMap = [
       component: () => import('@/views/dashboard/index')
     }]
   },
-
   {
-    path: '/example',
+    path: '/api',
     component: Layout,
-    redirect: '/example/table',
-    name: '接口自动化',
-    meta: { title: '接口自动化', icon: 'example' },
+    redirect: '/api/manage',
+    name: '接口管理',
+    meta: { title: '接口管理', icon: 'example' },
     children: [
       {
         path: 'table',
         name: 'Table',
+        hidden: true,
         component: () => import('@/views/table/index'),
         meta: { title: '用例管理', icon: 'table' }
       },
       {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: '接口测试', icon: 'tree' }
+        path: 'manage',
+        name: 'Manage',
+        component: () => import('@/views/apiManage/index'),
+        meta: { title: '接口测试', icon: 'example' }
       }
     ]
   },
@@ -68,22 +68,42 @@ export const constantRouterMap = [
       {
         path: 'table',
         name: '用例列表',
-        component: () => import('@/views/project/case/list'),
+        component: () => import('@/views/caseManage/list'),
         meta: { title: '用例列表', icon: 'table' }
       },
       {
         path: 'save',
         name: '添加用例',
-        component: () => import('@/views/project/case/save'),
+        component: () => import('@/views/caseManage/save'),
         meta: { title: '添加用例', icon: 'form' }
       },
       {
         path: 'edit/:id', // 添加和修改想用同一个页面,:id(相当于是个占位符,里面要传参数,在url里面进行传参)
         name: '编辑用例',
-        component: () => import('@/views/project/case/save'),
+        component: () => import('@/views/caseManage/save'),
         meta: { title: '编辑用例', noCache: true },
         hidden: true // 不显示此路由
       }
+    ]
+  },
+  {
+    path: '/param',
+    component: Layout,
+    name: '参数维护',
+    meta: { title: '参数维护', icon: 'example' },
+    children: [
+      {
+        path: '/list',
+        name: '参数列表',
+        component: () => import('@/views/param/list'),
+        meta: { title: '参数列表', icon: 'table' }
+      },
+      {
+        path: '/add',
+        name: '新增参数',
+        component: () => import('@/views/param/add'),
+        meta: { title: '新增参数', icon: 'table' }
+      },
     ]
   },
   { path: '*', redirect: '/404', hidden: true }
