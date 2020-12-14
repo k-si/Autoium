@@ -1,74 +1,78 @@
 package run.autoium.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import run.autoium.entity.po.ApiCase;
-import run.autoium.entity.po.ApiCaseManage;
-import run.autoium.entity.vo.ApiCaseManageVo;
 import run.autoium.entity.vo.ApiCaseVo;
+import run.autoium.listener.ExcelUploadListener;
 import run.autoium.mapper.ApiCaseManageMapper;
 import run.autoium.service.ApiCaseManageService;
+import run.autoium.service.ApiCaseSuiteService;
+import run.autoium.service.ProjectService;
 import run.autoium.utils.StringUtils;
 
-import java.util.Date;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 @Service
-public class ApiCaseManageServiceImpl extends ServiceImpl<ApiCaseManageMapper, ApiCaseManage> implements ApiCaseManageService {
+public class ApiCaseManageServiceImpl extends ServiceImpl<ApiCaseManageMapper, ApiCase> implements ApiCaseManageService {
 
     @Autowired
     private ApiCaseManageMapper mapper;
 
     @Override
-    public List<ApiCaseManage> getApiCasePageCondition(Page<ApiCaseManage> page, ApiCaseManage apiCaseManage) {
+    public List<ApiCaseVo> getApiCasePageCondition(Page<ApiCaseVo> page, ApiCaseVo apiCaseVo) {
 
-        QueryWrapper<ApiCaseManage> wrapper = new QueryWrapper<>();
-        
-        if(apiCaseManage != null){
-            String name = apiCaseManage.getName();
+        if (apiCaseVo != null) {
 
-            String description = apiCaseManage.getDescription();
+            String name = apiCaseVo.getName();
 
-            String gmtCreateStart = apiCaseManage.getGmtCreateStart();
+            String description = apiCaseVo.getDescription();
 
-            String gmtCreateEnd = apiCaseManage.getGmtCreateEnd();
-
-            if(name != null && !StringUtils.isEmpty(name)){
-                wrapper.like("a.name" , name);
-            }
-            
-            if(description != null && !StringUtils.isEmpty(description)){
-                wrapper.like("a.description" , description);
-            }
-            
-            if(gmtCreateStart != null && !StringUtils.isEmpty(gmtCreateStart)){
-                wrapper.ge("a.gmt_create" , gmtCreateStart);
+            if (name != null && !StringUtils.isEmpty(name)) {
+                apiCaseVo.setName("%" + name + "%");
             }
 
-            if(gmtCreateEnd != null && !StringUtils.isEmpty(gmtCreateEnd)){
-                wrapper.le("a.gmt_create" , gmtCreateEnd);
+            if (description != null && !StringUtils.isEmpty(description)) {
+                apiCaseVo.setDescription("%" + description + "%");
             }
         }
 
-        List<ApiCaseManage> list = mapper.getApiCasePageCondition(page, wrapper);
-
+        List<ApiCaseVo> list = mapper.getApiCasePageCondition(page, apiCaseVo);
         page.setRecords(list);
         return list;
     }
 
 
     @Override
-    public ApiCaseManage getById(String id) {
+    public ApiCaseVo getById(String id) {
         return mapper.getById(id);
     }
 
     @Override
-    public List<ApiCaseManage> getAll() {
+    public List<ApiCaseVo> getAll() {
         return mapper.getAll();
     }
 
+    @Override
+    public void uploadCaseByExcel(MultipartFile file,
+                                  ApiCaseManageService apiCaseManageService,
+                                  ApiCaseSuiteService apiCaseSuiteService,
+                                  ProjectService projectService) {
+        //上传文件流
+        try {
+            InputStream inputStream = file.getInputStream();
 
+            EasyExcel.read(inputStream, ApiCaseVo.class, new ExcelUploadListener(apiCaseManageService, apiCaseSuiteService, projectService)).sheet().doRead();
+
+            System.out.println();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -2,38 +2,72 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="run.autoium.mapper.ApiCaseManageMapper">
 
-    <resultMap id="apiCaseManageMap" type="run.autoium.entity.po.ApiCaseManage">
+    <resultMap id="apiCaseManageMap" type="run.autoium.entity.vo.ApiCaseVo">
         <id column="id" property="id"/>
         <result column="name" property="name"/>
         <result column="pid" property="projectId"/>
-        <result column="p_name" property="projectName"/>
+        <result column="pname" property="projectName"/>
         <result column="sid" property="apiCaseSuiteId"/>
-        <result column="s_name" property="apiCaseSuiteName"/>
+        <result column="sname" property="apiCaseSuiteName"/>
+        <result column="host" property="host"/>
+        <result column="path" property="path"/>
+        <result column="req_method" property="reqMethod"/>
+        <result column="req_header" property="stringReqHeader"/>
+        <result column="req_params" property="stringReqParams"/>
+        <result column="req_body_type" property="reqBodyType"/>
+        <result column="req_body_json" property="reqBodyJson"/>
+        <result column="req_body_form" property="stringReqBodyForm"/>
+        <result column="req_body_file" property="stringReqBodyFile"/>
+        <result column="examine" property="stringExamine"/>
+        <result column="pre_action" property="preAction"/>
         <result column="description" property="description"/>
+        <result column="sort" property="sort"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
         <result column="status" property="status"/>
     </resultMap>
 
-    <select id="getApiCasePageCondition" resultMap="apiCaseManageMap">
-        select a.id id , a.name name , a.project_id pid , p.name p_name , a.api_case_suite_id sid , s.name s_name , a.description , a.gmt_create , a.gmt_modified
+    <select id="getApiCasePageCondition"  resultMap="apiCaseManageMap">
+        select a.id id , a.name name , p.id pid , p.name pname , s.id sid , s.name sname , a.host , a.path , a.req_method ,
+        a.req_header , a.req_params , a.req_body_type , a.req_body_json , a.req_body_form , a.req_body_file , a.examine , a.pre_action ,
+        a.description, a.sort , a.gmt_create , a.gmt_modified , a.status
         from api_case a , project p , api_case_suite s
         where a.project_id = p.id and a.api_case_suite_id = s.id
-        <if test="ew.sqlSegment != null and ew.sqlSegment != '' ">
-            and ${ew.sqlSegment}
+        <if test="condition != null">
+            <if test="condition.name != null and condition.name != '' ">
+                and a.name like #{condition.name}
+            </if>
+
+            <if test="condition.description != null and condition.description != '' ">
+                and a.description like #{condition.description}
+            </if>
+
+            <if test="condition.gmtCreateStart != null and condition.gmtCreateStart != '' ">
+                and a.gmt_create &gt;= #{condition.gmtCreateStart}
+            </if>
+
+            <if test="condition.gmtCreateEnd != null and condition.gmtCreateEnd != ''">
+                and a.gmt_create &lt;= #{condition.gmtCreateEnd}
+            </if>
         </if>
+        order by a.gmt_create desc
     </select>
 
     <select id="getById" resultMap="apiCaseManageMap">
-        select a.id id , a.name name , a.project_id pid , p.name p_name , a.api_case_suite_id sid , s.name s_name , a.description , a.gmt_create , a.gmt_modified
+        select a.id id , a.name name , p.id pid , p.name pname , s.id sid , s.name sname , a.host , a.path , a.req_method ,
+        a.req_header , a.req_params , a.req_body_type , a.req_body_json , a.req_body_form , a.req_body_file , a.examine , a.pre_action ,
+        a.description, a.sort , a.gmt_create , a.gmt_modified , a.status
         from api_case a , project p , api_case_suite s
-        where a.project_id = p.id and a.api_case_suite_id = s.id and a.id = #{apiId}
+        where a.project_id = p.id and a.api_case_suite_id = s.id and a.id = #{id}
     </select>
 
     <select id="getAll" resultMap="apiCaseManageMap">
-        select a.id id , a.name name , a.project_id pid , p.name p_name , a.api_case_suite_id sid , s.name s_name , a.description , a.gmt_create , a.gmt_modified
+        select a.id id , a.name name , p.id pid , p.name pname , s.id sid , s.name sname , a.host , a.path , a.req_method ,
+        a.req_header , a.req_params , a.req_body_type , a.req_body_json , a.req_body_form , a.req_body_file , a.examine , a.pre_action ,
+        a.description, a.sort , a.gmt_create , a.gmt_modified , a.status
         from api_case a , project p , api_case_suite s
-        where a.project_id = p.id and a.api_case_suite_id = s.id;
+        where a.project_id = p.id and a.api_case_suite_id = s.id
+        order by a.gmt_create desc
     </select>
 
 </mapper>

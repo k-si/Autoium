@@ -31,8 +31,10 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
 
         List<SimpleProjectVo> list = new ArrayList<>();
 
+        SimpleProjectVo simpleProjectVo =  null;
+        //添加其他所有列表
         for (Project project : projects) {
-            SimpleProjectVo simpleProjectVo = new SimpleProjectVo();
+            simpleProjectVo = new SimpleProjectVo();
 
             simpleProjectVo.setId(project.getId());
             simpleProjectVo.setName(project.getName());

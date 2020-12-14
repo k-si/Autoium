@@ -28,6 +28,8 @@
         <dom4j.version>1.6.1</dom4j.version>
         <json-smart.version>2.2.1</json-smart.version>
         <json-path.version>2.2.0</json-path.version>
+        <easyexcel.version>2.1.1</easyexcel.version>
+        <poi.version>3.17</poi.version>
     </properties>
 
     <dependencies>
@@ -105,11 +107,27 @@
             <artifactId>dom4j</artifactId>
             <version>${dom4j.version}</version>
         </dependency>
-
+        <!--easyExcel-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>${easyexcel.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
+        </dependency>
+        <!--xls-->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>${poi.version}</version>
         </dependency>
     </dependencies>
 

@@ -38,7 +38,7 @@ public class ApiCaseController {
      */
     @GetMapping("/getAll")
     public R getAll() {
-        List<SimpleApiSuiteVo> list =  apiCaseService.getAll();
+        List<SimpleApiSuiteVo> list = apiCaseService.getAll();
         return R.ok().data("all", list);
     }
 

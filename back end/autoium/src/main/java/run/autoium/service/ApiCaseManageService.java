@@ -3,18 +3,25 @@ package run.autoium.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.multipart.MultipartFile;
 import run.autoium.entity.po.ApiCase;
 import run.autoium.entity.po.ApiCaseManage;
-import run.autoium.entity.vo.ApiCaseManageVo;
+import run.autoium.entity.vo.ApiCaseVo;
 
 import java.util.List;
 
-public interface ApiCaseManageService extends IService<ApiCaseManage> {
-    public List<ApiCaseManage> getApiCasePageCondition(Page<ApiCaseManage> page,
-                                                  @Param("apiCaseManageVo") ApiCaseManage apiCaseManage);
+public interface ApiCaseManageService extends IService<ApiCase> {
 
-    public ApiCaseManage getById(String id);
+    List<ApiCaseVo> getApiCasePageCondition(Page<ApiCaseVo> page, @Param("apiCaseManageVo") ApiCaseVo apiCaseVo);
 
-    public List<ApiCaseManage> getAll();
+    ApiCaseVo getById(String id);
+
+    List<ApiCaseVo> getAll();
+
+
+    void uploadCaseByExcel(MultipartFile file,
+                           ApiCaseManageService apiCaseManageService,
+                           ApiCaseSuiteService apiCaseSuiteService,
+                           ProjectService projectService);
 
 }

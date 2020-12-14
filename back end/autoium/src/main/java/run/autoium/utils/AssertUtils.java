@@ -61,7 +61,7 @@ public class AssertUtils {
         Integer expectType = myAssert.getExpectType();
         String expectValue = myAssert.getExpectValue();
         Integer expectRelation = myAssert.getExpectRelation();
-        Object realValue;
+        Object realValue = null;
 
         switch (dataSource) {
 
@@ -87,10 +87,12 @@ public class AssertUtils {
                         .orElse(null);
                 if (myHeader == null) {
                     myAssert.setRealType(ObjType.empty);
+                    myAssert.setRealTypeText("NULL");
                     myAssert.setRealValue("");
                 } else {
                     myAssert.setRealType(ObjType.string);
-                    myAssert.setRealValue(myHeader.getKey());
+                    myAssert.setRealTypeText("字符串");
+                    myAssert.setRealValue(myHeader.getValue());
                 }
                 break;
 
@@ -98,11 +100,14 @@ public class AssertUtils {
             case DataSourceType.respJson:
                 try {
                     realValue = JsonPath.read(resultVo.getBody(), express);
+                    
                 } catch (Exception e) {
                     myAssert.setRealType(ObjType.empty);
+                    myAssert.setRealTypeText("NULL");
                     myAssert.setRealValue("");
                     break;
                 }
+                myAssert.setRealValue(realValue);
                 myAssert.setRealType(ObjectUtils.getObjRealType(realValue));
                 break;
 
