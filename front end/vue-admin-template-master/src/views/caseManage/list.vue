@@ -1,14 +1,14 @@
 <template>
   <div class="app-container">
     <!--查询表单 v-model数据双向绑定-->
-    <el-form :inline="true" class="demo-form-inline" >
-      <el-form-item>
-        <el-input v-model="caseQuery.name" placeholder="用例名称"/>
+    <el-form inline>
+      <el-form-item style="width:150px">
+        <el-input v-model="caseQuery.name" placeholder="用例名称" style="width:150px"/>
       </el-form-item>
-      <el-form-item >
-        <el-input v-model="caseQuery.description" placeholder="用例描述"/>
+      <el-form-item style="width:150px" >
+        <el-input v-model="caseQuery.description" placeholder="用例描述" style="width:150px"/>
       </el-form-item>
-      <el-form-item>
+      <el-form-item label="创建时间" >
         <el-date-picker
           v-model="caseQuery.gmtCreateStart"
           type="datetime"
@@ -32,7 +32,6 @@
     <div style="margin-bottom:10px">
       <el-button type="danger" @click="delArray()">批量删除</el-button>
       <el-button @click="toggleSelection()">取消选择</el-button>
-      
       <!-- action 必选参数，上传的地址
       :limit 最大允许上传个数
       :http-request 覆盖默认的上传行为，自定义上传
@@ -68,11 +67,14 @@
     <!-- ：data的值也就是取到值对应的数据，只需要将数组传递过去就可以进行遍历，因为底层进行了封装
         el-table-column表示列，prop表示属性名字，也就是要显示的属性key的值 -->
     <!-- 表格 -->
+    <!-- 跨页对表格选中状态进行保存：
+    1.el-table中加入:row-key="getRowKeys" 在methods里面实现方法，返回列的id值
+    2.el-table-column多选框属性加入:reserve-selection="true" -->
     <el-table
-      :v-loading="listLoading"
       ref="multipleTable"
       :data="list"
       :header-cell-style="{background:'#eef1f6',color:'#606266'}"
+      :row-key="getRowKeys"
       element-loading-text="数据加载中"
       border
       stripe
@@ -80,6 +82,7 @@
       highlight-current-row
       @selection-change="handleSelectionChange">
       <el-table-column
+        :reserve-selection="true"
         type="selection"
         style="width: 5%;"/>
       <el-table-column type="expand">
@@ -166,7 +169,7 @@ export default {
   data() {
     // 定义变量和初始值
     return {
-      list: null, // 查询之后接口返回集合
+      list: [], // 查询之后接口返回集合
       page: 1, // 当前页，默认第一页
       limit: 5, // 每页显示记录数
       total: 0, // 总记录数
@@ -174,8 +177,7 @@ export default {
       fileList: [],
       delArr: [], // 存放删除的数据
       multipleSelection: [], // 多选的数据
-      confirmCurrentSelectFileList: [],
-      listLoading:true
+      confirmCurrentSelectFileList: []
     }
   },
   created() {
@@ -231,6 +233,9 @@ export default {
             this.getList()
           })
       }) // 点击取消，执行catch方法,但是因为取消不需要提示,所以catch去掉了
+    },
+    getRowKeys(row) {
+      return row.id
     },
     // 选择事件，获得选中的数据
     handleSelectionChange(data) {
@@ -387,6 +392,10 @@ export default {
 }
 </script>
 <style scoped>
+/*  */
+ .el-form--inline /deep/ .el-form-item__content{
+   width:220px
+ }
   .demo-table-expand {
     font-size: 0;
   }
